@@ -7,14 +7,13 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 SimpleTimer timer;
 
-int relayPin = 6;
+int dayPin = 6;
+int hourPin = 7;
+int minutePin = 8;
 
-int forceCoffeePin = 7;
+int forceCoffeePin = 9;
 
-int piezoPin = 8;
-
-int minutePin = 9;
-int hourPin = 10;
+int relayPin = 13;
 
 int month = 0;
 int monthDay = 1;
@@ -56,6 +55,21 @@ void loop() {
     delay(300);
   }
   
+  if (digitalRead(dayPin)) {
+    delay(300);
+    
+    if (digitalRead(minutePin)) {
+      weekDay++;
+    } else if (digitalRead(hourPin)) {
+      month++;
+    } else {
+      weekDay++;
+      monthDay++; 
+    }
+    
+    showTime();
+  }
+  
   if (digitalRead(forceCoffeePin)) {
     if (brewing) {
      stopBrew();
@@ -88,7 +102,7 @@ void brew() {
   
   digitalWrite(relayPin, LOW);
   
-  tone(piezoPin, NOTE_B5, 1000);
+  //tone(piezoPin, NOTE_B5, 1000);
   
   lcd.setCursor(0, 1);
   lcd.print("                ");
