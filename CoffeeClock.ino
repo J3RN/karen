@@ -10,14 +10,14 @@ SimpleTimer timer;
 int dayPin = 6;
 int hourPin = 7;
 int minutePin = 8;
-
 int forceCoffeePin = 9;
-
 int relayPin = 13;
 
 int day = 0;
 int hour = 0;
 int minute = 0;
+
+String timeString = "";
 
 boolean brewing = false;
 
@@ -26,7 +26,7 @@ String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 void setup() {
   lcd.begin(16, 2);
   timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
-  showTime();
+  checkAndDisplay();
   
   pinMode(hourPin, INPUT);
   pinMode(minutePin, INPUT);
@@ -40,19 +40,19 @@ void loop() {
   
   if (digitalRead(hourPin)) {
     hour++;
-    showTime();
+    checkAndDisplay();
     delay(300);
   }
   
   if (digitalRead(minutePin)) {
     minute++;
-    showTime();
+    checkAndDisplay();
     delay(300);
   }
   
   if (digitalRead(dayPin)) {
     day++;
-    showTime();
+    checkAndDisplay();
     delay(300); 
   }
   
@@ -93,7 +93,7 @@ void brew() {
   lcd.setCursor(0, 1);
   lcd.print("                ");
   lcd.setCursor(0, 1);
-  lcd.print("Brewing coffee");
+  lcd.print("Brew since " + timeString );
 }
 
 void stopBrew() {
@@ -104,13 +104,13 @@ void stopBrew() {
   lcd.setCursor(0, 1);
   lcd.print("                ");
   lcd.setCursor(0, 1);
-  lcd.print("Not brewing");
+  lcd.print("Last brew: " + timeString);
 }
 
 void updateTime() {
   minute++;
   
-  showTime();
+  checkAndDisplay();
   
   checkMakeCoffee();
 }
@@ -131,9 +131,7 @@ void checkTime() {
   } 
 }
 
-void showTime() {
-  checkTime();
-  
+void setTimeString() {
   String hourString = String(hour);
   String minuteString = String(minute);
   
@@ -145,6 +143,16 @@ void showTime() {
     minuteString = "0" + minuteString;
   }
   
+  timeString = hourString + ":" + minuteString;
+}
+
+void showTime() {
   lcd.setCursor(0, 0);
-  lcd.print(days[day] + " - " + hourString + ":" + minuteString);
+  lcd.print(days[day] + " - " + timeString);
+}
+
+void checkAndDisplay() {
+  checkTime();
+  setTimeString();
+  showTime();
 }
