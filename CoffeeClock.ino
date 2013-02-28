@@ -16,11 +16,16 @@ int piezoPin = 8;
 int minutePin = 9;
 int hourPin = 10;
 
-int day = 0;
+int month = 0;
+int monthDay = 1;
+int weekDay = 0;
 int hour = 0;
 int minute = 0;
 
 boolean brewing = false;
+
+String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
@@ -63,11 +68,11 @@ void loop() {
 }
 
 void checkMakeCoffee() {
-  if ((day == 0 || day == 6)){
+  if ((weekDay == 0 || weekDay == 6)){
     if (hour == 10 && minute == 0) {
      brew();
     }
-  } else if (day == 1) {
+  } else if (weekDay == 1) {
    if( hour == 9 && minute == 20) {
     brew();
    }
@@ -116,14 +121,20 @@ void checkTime() {
     minute = 0;
   }
     
-  if(hour == 24) {
-    day++;
+  if (hour == 24) {
+    weekDay++;
+    monthDay++;
     hour = 0;
   }
     
-  if(day == 7) {
-    day = 0;
-  } 
+  if (weekDay == 7) {
+    weekDay = 0;
+  }
+  
+  if (monthDay == monthDays[month]) {
+    month++;
+    monthDay = 0;
+  }
 }
 
 void showTime() {
@@ -141,5 +152,5 @@ void showTime() {
   }
   
   lcd.setCursor(0, 0);
-  lcd.print(days[day] + " - " + hourString + ":" + minuteString);
+  lcd.print(days[weekDay] + " " + hourString + ":" + minuteString + " " + months[month] + " " + String(month));
 }
