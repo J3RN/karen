@@ -22,7 +22,7 @@ int minute = 0;
 
 boolean brewing = false;
 
-String days[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 void setup() {
   lcd.begin(16, 2);
