@@ -83,7 +83,7 @@ void brew() {
   
   digitalWrite(relayPin, LOW);
   
-  tone(piezoPin, NOTE_B5, 1000);
+  tone(piezoPin, NOTE_B5, 500);
   
   lcd.setCursor(0, 1);
   lcd.print("                ");
