@@ -53,7 +53,7 @@ void loop() {
   if (digitalRead(dayPin)) {
     day++;
     showTime();
-    delay(300);
+    delay(300); 
   }
   
   if (digitalRead(forceCoffeePin)) {
