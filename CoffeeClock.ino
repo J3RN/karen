@@ -18,6 +18,7 @@ int hour = 0;
 int minute = 0;
 
 String timeString = "";
+String lastBrewString = "Never";
 
 boolean brewing = false;
 
@@ -90,10 +91,12 @@ void brew() {
   
   //tone(piezoPin, NOTE_B5, 500);
   
+  lastBrewString = timeString;
+  
   lcd.setCursor(0, 1);
   lcd.print("                ");
   lcd.setCursor(0, 1);
-  lcd.print("Brew since " + timeString );
+  lcd.print("Brew Since " + lastBrewString);
 }
 
 void stopBrew() {
@@ -104,7 +107,7 @@ void stopBrew() {
   lcd.setCursor(0, 1);
   lcd.print("                ");
   lcd.setCursor(0, 1);
-  lcd.print("Last brew: " + timeString);
+  lcd.print("Last Brew: " + lastBrewString);
 }
 
 void updateTime() {
