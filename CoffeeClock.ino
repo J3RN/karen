@@ -21,7 +21,12 @@ int weekDay = 0;
 int hour = 0;
 int minute = 0;
 
+int doubleButtonPause = 100;
+int debounce = 250;
+
 boolean brewing = false;
+
+String clearString = "                ";
 
 String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -44,30 +49,45 @@ void loop() {
   timer.run();
   
   if (digitalRead(hourPin)) {
-    hour++;
+    delay(doubleButtonPause);
+    
+    if (digitalRead(dayPin)) {
+      month++;
+    } else {
+      hour++;
+    }
+    
     showTime();
-    delay(300);
   }
   
   if (digitalRead(minutePin)) {
-    minute++;
+    delay(doubleButtonPause);
+    
+    if (digitalRead(dayPin)) {
+      weekDay++;
+    } else {
+      minute++;
+    }
+    
     showTime();
-    delay(300);
+    
+    delay(debounce - doubleButtonPause);
   }
   
   if (digitalRead(dayPin)) {
-    delay(300);
+    delay(doubleButtonPause);
     
     if (digitalRead(minutePin)) {
       weekDay++;
     } else if (digitalRead(hourPin)) {
       month++;
     } else {
-      weekDay++;
       monthDay++; 
     }
     
     showTime();
+    
+    delay(debounce - doubleButtonPause);
   }
   
   if (digitalRead(forceCoffeePin)) {
@@ -77,7 +97,7 @@ void loop() {
      brew();
     }
     
-    delay(300);
+    delay(debounce);
   }
 }
 
@@ -116,7 +136,7 @@ void stopBrew() {
   digitalWrite(relayPin, HIGH);
   
   lcd.setCursor(0, 1);
-  lcd.print("                ");
+  lcd.print(clearString);
   lcd.setCursor(0, 1);
   lcd.print("Not brewing");
 }
@@ -145,9 +165,13 @@ void checkTime() {
     weekDay = 0;
   }
   
-  if (monthDay == monthDays[month]) {
+  if (monthDay > monthDays[month]) {
     month++;
-    monthDay = 0;
+    monthDay = 1;
+  }
+  
+  if (month == 12) {
+    month = 0;
   }
 }
 
@@ -166,5 +190,7 @@ void showTime() {
   }
   
   lcd.setCursor(0, 0);
-  lcd.print(days[weekDay] + " " + hourString + ":" + minuteString + " " + months[month] + " " + String(month));
+  lcd.print(clearString);
+  lcd.setCursor(0, 0);
+  lcd.print(days[weekDay] + " " + months[month] + " " + String(monthDay) + " " + hourString + ":" + minuteString);
 }
