@@ -2,6 +2,10 @@
 #include <LiquidCrystal.h>
 #include "pitches.h"
 
+#define DAY 1
+#define HOUR 2
+#define MINUTE 3
+
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -71,53 +75,66 @@ void loop() {
   // Needed for timer to work
   timer.run();
   
+  // Initialize var to hold button push info
+  int buttonCode = 0;
+  
+  // Find pressed button, if any
+  if (digitalRead(dayPin)) {
+    buttonCode = DAY;
+  } else if (digitalRead(hourPin)) {
+    buttonCode = HOUR;
+  } else if (digitalRead(minutePin)) {
+    buttonCode = MINUTE;
+  }
   
   // If the hour button is being pushed, increment
-  // the hour and check and display the time 
-  if (digitalRead(hourPin)) {
+  // the hour and check and display the time
+  if (buttonCode != 0) {
+    // Wait for possible second button press 
     delay(doubleButtonPause);
     
-    if (digitalRead(dayPin)) {
-      month++;
-    } else {
-      hour++;
+    // Check button combos
+    switch (buttonCode) {
+      // Increment weekday, month, or day of the month based
+      // on button combination
+      case DAY:
+        if (digitalRead(minutePin)) {
+          weekDay++;
+        } else if (digitalRead(hourPin)) {
+          month++;
+        } else {
+          monthDay++; 
+        }
+        
+        break;
+        
+      // Increment month if day is also pressed
+      // Otherwise, increment hour
+      case HOUR:
+        if (digitalRead(dayPin)) {
+          month++;
+        } else {
+          hour++;
+        }
+        
+        break;
+        
+      // Increment weekday if day is also pressed
+      // Otherwise, increment minute
+      case MINUTE:
+        if (digitalRead(dayPin)) {
+          weekDay++;
+        } else {
+          minute++;
+        }
+        
+        break;
     }
     
+    // Display new time
     checkAndDisplay();
     
-    delay(debounce - doubleButtonPause);
-  }
-  
-  // If the minute button is being pushed, increment
-  // the minute and check and display the time 
-  if (digitalRead(minutePin)) {
-    delay(doubleButtonPause);
-    
-    if (digitalRead(dayPin)) {
-      weekDay++;
-    } else {
-      minute++;
-    }
-    
-    checkAndDisplay();
-    
-    delay(debounce - doubleButtonPause);
-  }
-  
-  // Increment weekday, month, or month day accordingly
-  if (digitalRead(dayPin)) {
-    delay(doubleButtonPause);
-    
-    if (digitalRead(minutePin)) {
-      weekDay++;
-    } else if (digitalRead(hourPin)) {
-      month++;
-    } else {
-      monthDay++; 
-    }
-    
-    checkAndDisplay();
-    
+    // Prevent debounce
     delay(debounce - doubleButtonPause);
   }
   
