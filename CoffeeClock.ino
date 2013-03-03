@@ -71,6 +71,7 @@ void loop() {
   // Needed for timer to work
   timer.run();
   
+  
   // If the hour button is being pushed, increment
   // the hour and check and display the time 
   if (digitalRead(hourPin)) {
