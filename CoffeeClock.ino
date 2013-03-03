@@ -83,6 +83,8 @@ void loop() {
     }
     
     checkAndDisplay();
+    
+    delay(debounce - doubleButtonPause);
   }
   
   // If the minute button is being pushed, increment
