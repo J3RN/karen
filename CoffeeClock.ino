@@ -19,8 +19,6 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 SimpleTimer timer;
 
-
-
 // Initialize time units
 int month = 0;
 int monthDay = 1;
@@ -56,12 +54,12 @@ void setup() {
   lcd.begin(16, 2);
   
   // Set the pin modes for buttons and relay
-  pinMode(dayPin, INPUT);
-  pinMode(hourPin, INPUT);
-  pinMode(minutePin, INPUT);
-  pinMode(forceCoffeePin, INPUT);
-  pinMode(piezoPin, OUTPUT);
-  pinMode(relayPin, OUTPUT);
+  pinMode(DAY_BUTTON, INPUT);
+  pinMode(HOUR_BUTTON, INPUT);
+  pinMode(MINUTE_BUTTON, INPUT);
+  pinMode(COFFEE_BUTTON, INPUT);
+  pinMode(PIEZO, OUTPUT);
+  pinMode(RELAY, OUTPUT);
   
   // Update time every minute
   timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
@@ -81,11 +79,11 @@ void loop() {
   int buttonCode = 0;
   
   // Find pressed button, if any
-  if (digitalRead(dayPin)) {
+  if (digitalRead(DAY_BUTTON)) {
     buttonCode = DAY;
-  } else if (digitalRead(hourPin)) {
+  } else if (digitalRead(HOUR_BUTTON)) {
     buttonCode = HOUR;
-  } else if (digitalRead(minutePin)) {
+  } else if (digitalRead(MINUTE_BUTTON)) {
     buttonCode = MINUTE;
   }
   
@@ -100,9 +98,9 @@ void loop() {
       // Increment weekday, month, or day of the month based
       // on button combination
       case DAY:
-        if (digitalRead(minutePin)) {
+        if (digitalRead(MINUTE_BUTTON)) {
           weekDay++;
-        } else if (digitalRead(hourPin)) {
+        } else if (digitalRead(HOUR_BUTTON)) {
           month++;
         } else {
           monthDay++; 
@@ -113,7 +111,7 @@ void loop() {
       // Increment month if day is also pressed
       // Otherwise, increment hour
       case HOUR:
-        if (digitalRead(dayPin)) {
+        if (digitalRead(DAY_BUTTON)) {
           month++;
         } else {
           hour++;
@@ -124,7 +122,7 @@ void loop() {
       // Increment weekday if day is also pressed
       // Otherwise, increment minute
       case MINUTE:
-        if (digitalRead(dayPin)) {
+        if (digitalRead(DAY_BUTTON)) {
           weekDay++;
         } else {
           minute++;
@@ -141,7 +139,7 @@ void loop() {
   }
   
   // If the force coffee pin is pushed, toggle brew
-  if (digitalRead(forceCoffeePin)) {
+  if (digitalRead(COFFEE_BUTTON)) {
     if (brewing) {
      stopBrew();
     } else {
@@ -180,10 +178,10 @@ void brew() {
   brewing = true;
   
   // Turn the relay on, turning the coffee maker on
-  digitalWrite(relayPin, LOW);
+  digitalWrite(RELAY, LOW);
   
   // Sound a tone signalling brewing
-  tone(piezoPin, NOTE_B5, 500);
+  tone(PIEZO, NOTE_B5, 500);
 
   // Set lastBrewString to the current timeString
   lastBrewString = timeString;
@@ -202,7 +200,7 @@ void stopBrew() {
   brewing = false;
   
   // Turn off the relay
-  digitalWrite(relayPin, HIGH);
+  digitalWrite(RELAY, HIGH);
   
   // Clear line 2 of the LCD
   lcd.setCursor(0, 1);
