@@ -16,7 +16,9 @@ int piezoPin = 10;
 int relayPin = 13;
 
 // Initialize time units
-int day = 0;
+int month = 0;
+int monthDay = 1;
+int weekDay = 0;
 int hour = 0;
 int minute = 0;
 
@@ -26,6 +28,19 @@ String lastBrewString = "Never";
 
 // Initialize brewing bool
 boolean brewing = false;
+
+// Delays for button pushing
+int doubleButtonPause = 100;
+int debounce = 250;
+
+// String used to clear a line of the LCD
+String clearString = "                ";
+
+// Initialize array of month names
+String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+// Initialize array for days in each month
+int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 // Initialize days to an array of days of the week
 String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
@@ -59,25 +74,48 @@ void loop() {
   // If the hour button is being pushed, increment
   // the hour and check and display the time 
   if (digitalRead(hourPin)) {
-    hour++;
+    delay(doubleButtonPause);
+    
+    if (digitalRead(dayPin)) {
+      month++;
+    } else {
+      hour++;
+    }
+    
     checkAndDisplay();
-    delay(300);
   }
   
   // If the minute button is being pushed, increment
   // the minute and check and display the time 
   if (digitalRead(minutePin)) {
-    minute++;
+    delay(doubleButtonPause);
+    
+    if (digitalRead(dayPin)) {
+      weekDay++;
+    } else {
+      minute++;
+    }
+    
     checkAndDisplay();
-    delay(300);
+    
+    delay(debounce - doubleButtonPause);
   }
   
-  // If the day button is being pushed, increment
-  // the day and check and display the time 
+  // Increment weekday, month, or month day accordingly
   if (digitalRead(dayPin)) {
-    day++;
+    delay(doubleButtonPause);
+    
+    if (digitalRead(minutePin)) {
+      weekDay++;
+    } else if (digitalRead(hourPin)) {
+      month++;
+    } else {
+      monthDay++; 
+    }
+    
     checkAndDisplay();
-    delay(300); 
+    
+    delay(debounce - doubleButtonPause);
   }
   
   // If the force coffee pin is pushed, toggle brew
@@ -88,7 +126,7 @@ void loop() {
      brew();
     }
     
-    delay(300);
+    delay(debounce);
   }
 }
 
@@ -97,11 +135,11 @@ void loop() {
  */
 void checkMakeCoffee() {
   // If Sunday or Saturday at 10:00, make coffee
-  if ((day == 0 || day == 6)){
+  if ((weekDay == 0 || weekDay == 6)){
     if (hour == 10 && minute == 0) {
      brew();
     }
-  } else if (day == 1) {  // If the time is Monday at 9:20, make coffee
+  } else if (weekDay == 1) {  // If the time is Monday at 9:20, make coffee
    if( hour == 9 && minute == 20) {
     brew();
    }
@@ -124,7 +162,7 @@ void brew() {
   
   // Sound a tone signalling brewing
   tone(piezoPin, NOTE_B5, 500);
-  
+
   // Set lastBrewString to the current timeString
   lastBrewString = timeString;
   
@@ -146,7 +184,7 @@ void stopBrew() {
   
   // Clear line 2 of the LCD
   lcd.setCursor(0, 1);
-  lcd.print("                ");
+  lcd.print(clearString);
   
   // Write the time of last brew on line 2 of the LCD
   lcd.setCursor(0, 1);
@@ -179,16 +217,24 @@ void checkTime() {
     minute = 0;
   }
   
-  // If hour is 24, update day and hour
-  if(hour == 24) {
-    day++;
+  if (hour == 24) {
+    weekDay++;
+    monthDay++;
     hour = 0;
   }
+    
+  if (weekDay == 7) {
+    weekDay = 0;
+  }
   
-  // If day is 7, update day
-  if(day == 7) {
-    day = 0;
-  } 
+  if (monthDay > monthDays[month]) {
+    month++;
+    monthDay = 1;
+  }
+  
+  if (month == 12) {
+    month = 0;
+  }
 }
 
 /*
@@ -219,7 +265,9 @@ void setTimeString() {
 void showTime() {
   // Display time on line 0 of the LCD
   lcd.setCursor(0, 0);
-  lcd.print(days[day] + " - " + timeString);
+  lcd.print(clearString);
+  lcd.setCursor(0, 0);
+  lcd.print(days[weekDay] + " " + months[month] + " " + String(monthDay) + " " + timeString);
 }
 
 /**
