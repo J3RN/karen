@@ -6,18 +6,20 @@
 #define HOUR 2
 #define MINUTE 3
 
+// Set pins
+#define DAY_BUTTON 6
+#define HOUR_BUTTON 7
+#define MINUTE_BUTTON 8
+#define COFFEE_BUTTON 9
+#define PIEZO 10
+#define RELAY 13
+
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 SimpleTimer timer;
 
-// Set pins
-int dayPin = 6;
-int hourPin = 7;
-int minutePin = 8;
-int forceCoffeePin = 9;
-int piezoPin = 10;
-int relayPin = 13;
+
 
 // Initialize time units
 int month = 0;
