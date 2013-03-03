@@ -14,6 +14,22 @@
 #define PIEZO 10
 #define RELAY 13
 
+// Delays for button pushing
+#define DOUBLE_BUTTON_PAUSE 100
+#define DEBOUNCE 250
+
+// String used to clear a line of the LCD
+const String clearString = "                ";
+
+// Initialize array of month names
+const String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+// Initialize array for days in each month
+const int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+// Initialize days to an array of days of the week
+const String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -32,22 +48,6 @@ String lastBrewString = "Never";
 
 // Initialize brewing bool
 boolean brewing = false;
-
-// Delays for button pushing
-int doubleButtonPause = 100;
-int debounce = 250;
-
-// String used to clear a line of the LCD
-String clearString = "                ";
-
-// Initialize array of month names
-String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-// Initialize array for days in each month
-int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-// Initialize days to an array of days of the week
-String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 void setup() {
   // Start LCD
@@ -91,7 +91,7 @@ void loop() {
   // the hour and check and display the time
   if (buttonCode != 0) {
     // Wait for possible second button press 
-    delay(doubleButtonPause);
+    delay(DOUBLE_BUTTON_PAUSE);
     
     // Check button combos
     switch (buttonCode) {
@@ -134,8 +134,8 @@ void loop() {
     // Display new time
     checkAndDisplay();
     
-    // Prevent debounce
-    delay(debounce - doubleButtonPause);
+    // Prevent DEBOUNCE
+    delay(DEBOUNCE - DOUBLE_BUTTON_PAUSE);
   }
   
   // If the force coffee pin is pushed, toggle brew
@@ -146,7 +146,7 @@ void loop() {
      brew();
     }
     
-    delay(debounce);
+    delay(DEBOUNCE);
   }
 }
 
