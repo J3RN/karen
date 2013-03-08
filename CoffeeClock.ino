@@ -2,6 +2,7 @@
 #include <LiquidCrystal.h>
 #include "pitches.h"
 
+// Button codes
 #define DAY 1
 #define HOUR 2
 #define MINUTE 3
