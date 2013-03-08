@@ -1,3 +1,4 @@
+#include <Servo.h>
 #include <SimpleTimer.h>
 #include <LiquidCrystal.h>
 #include "pitches.h"
@@ -12,7 +13,7 @@
 #define HOUR_BUTTON 7
 #define MINUTE_BUTTON 8
 #define COFFEE_BUTTON 9
-#define PIEZO 10
+#define BLINDS 10
 #define RELAY 13
 
 // Delays for button pushing
@@ -31,10 +32,20 @@ const int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 // Initialize days to an array of days of the week
 const String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
+// Times of each day at which coffee should be brewed
 const String startTimes[] = {"10:00", "09:20", "08:10", "08:10", "08:10", "08:10", "10:00"};
+
+// Times of each day to open the blinds
+const String openBlindsTimes[] = {"09:50", "09:10", "08:00", "08:00", "08:00", "08:00", "09:50"};
+
+// Time to close blinds each day
+const String closeBlindsTime = "21:00";
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+// Initialize blinds servo
+Servo blindsServo;
 
 SimpleTimer timer;
 
@@ -61,8 +72,10 @@ void setup() {
   pinMode(HOUR_BUTTON, INPUT);
   pinMode(MINUTE_BUTTON, INPUT);
   pinMode(COFFEE_BUTTON, INPUT);
-  pinMode(PIEZO, OUTPUT);
   pinMode(RELAY, OUTPUT);
+  
+  // Attach the blinds servo
+  blindsServo.attach(BLINDS);
   
   // Update time every minute
   timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
@@ -172,9 +185,6 @@ void brew() {
   
   // Turn the relay on, turning the coffee maker on
   digitalWrite(RELAY, LOW);
-  
-  // Sound a tone signalling brewing
-  tone(PIEZO, NOTE_B5, 500);
 
   // Set lastBrewString to the current timeString
   lastBrewString = timeString;
