@@ -9,9 +9,9 @@
 #define MINUTE 3
 
 // Set pins
-#define DAY_BUTTON 6
+#define MINUTE_BUTTON 6
 #define HOUR_BUTTON 7
-#define MINUTE_BUTTON 8
+#define DAY_BUTTON 8
 #define COFFEE_BUTTON 9
 #define BLINDS 10
 #define RELAY 13
