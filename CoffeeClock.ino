@@ -31,6 +31,8 @@ const int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 // Initialize days to an array of days of the week
 const String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
+const String startTimes[] = {"10:00", "09:20", "08:10", "08:10", "08:10", "08:10", "10:00"};
+
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -155,19 +157,9 @@ void loop() {
  * Check if coffee should be made based on the current time
  */
 void checkMakeCoffee() {
-  // If Sunday or Saturday at 10:00, make coffee
-  if ((weekDay == 0 || weekDay == 6)){
-    if (hour == 10 && minute == 0) {
-     brew();
-    }
-  } else if (weekDay == 1) {  // If the time is Monday at 9:20, make coffee
-   if( hour == 9 && minute == 20) {
+  // If the time matches for today, make coffee
+  if (timeString = startTimes[weekDay]) {
     brew();
-   }
-  } else {  // If it's any other day at 8:10, make coffee
-   if (hour == 8 && minute == 10) {
-     brew();
-   }
   }
 }
 
