@@ -91,6 +91,9 @@ void setup() {
   
   // Relay is set to LOW by default, so stop it
   stopBrew();
+  
+  // Make sure the servo isn't turning
+  blindsServo.write(STOP);
 }
 
 void loop() {
