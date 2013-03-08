@@ -16,6 +16,12 @@
 #define BLINDS 10
 #define RELAY 13
 
+// Set blinds constants
+#define OPEN 0
+#define CLOSE 180
+#define STOP 91
+#define BLINDS_TIME 5000
+
 // Delays for button pushing
 #define DOUBLE_BUTTON_PAUSE 100
 #define DEBOUNCE 250
@@ -171,9 +177,39 @@ void loop() {
  */
 void checkMakeCoffee() {
   // If the time matches for today, make coffee
-  if (timeString = startTimes[weekDay]) {
+  if (timeString.equals(startTimes[weekDay])) {
     brew();
   }
+  
+  if (timeString.equals(openBlindsTimes[weekDay])) {
+    open_blinds();
+  }
+  
+  if (timeString.equals(closeBlindsTime)) {
+    close_blinds();
+  }
+}
+
+/**
+ * Turns the servo to open the blinds
+ */
+void open_blinds() {
+  blindsServo.write(OPEN);
+ 
+  delay(BLINDS_TIME);
+  
+  blindsServo.write(STOP); 
+}
+
+/**
+ * Turns the servo to close the blinds
+ */
+void close_blinds() {
+  blindsServo.write(CLOSE);
+ 
+  delay(BLINDS_TIME);
+  
+  blindsServo.write(STOP); 
 }
 
 /**
