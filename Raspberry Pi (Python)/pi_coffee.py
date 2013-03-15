@@ -5,7 +5,7 @@ import time
 import RPi.GPIO as GPIO
 import httplib
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(10, GPIO.OUT)
 GPIO.setup(9, GPIO.IN)
