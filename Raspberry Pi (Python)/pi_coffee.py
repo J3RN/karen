@@ -7,8 +7,8 @@ import httplib
 
 GPIO.setmode(GPIO.BOARD)
 
-GPIO.setup(4, GPIO.OUT)
-GPIO.setup(18, GPIO.IN)
+GPIO.setup(10, GPIO.OUT)
+GPIO.setup(9, GPIO.IN)
 
 oldSec = time.strftime("%S")
 
