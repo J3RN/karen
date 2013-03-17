@@ -19,7 +19,7 @@ coffeeTimes = {"Sun 10:00",
 brewPin = 10
 stopPin = 9
 
-souldBrew = False
+shouldBrew = False
 brewing = False
 
 GPIO.setmode(GPIO.BCM)
