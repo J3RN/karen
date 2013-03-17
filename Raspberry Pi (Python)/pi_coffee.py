@@ -35,6 +35,8 @@ while True:
         
         if (wDay + " " + timeString) in coffeeTimes:
             shouldBrew = True
+            
+        oldMin = time.strftime("%M")
         
         print wDay, month, mDay, timeString
     
@@ -51,6 +53,8 @@ while True:
             print "Should not make coffee!"
         
         conn.close()
+        
+        oldSec = time.strftime("%S")
     
     if shouldBrew:
         GPIO.output(brewPin, GPIO.HIGH)
