@@ -22,9 +22,13 @@ stopPin = 9
 shouldBrew = False
 brewing = False
 
+# Get GPIO components ready
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(brewPin, GPIO.OUT)
 GPIO.setup(stopPin, GPIO.IN)
+
+# For the relay, LOW = on, HIGH = off
+GPIO.output(brewPin, GPIO.HIGH)
 
 while True:
     if time.strftime("%M") != oldMin:
@@ -57,10 +61,10 @@ while True:
         oldSec = time.strftime("%S")
     
     if shouldBrew:
-        GPIO.output(brewPin, GPIO.HIGH)
+        GPIO.output(brewPin, GPIO.LOW)
         shouldBrew = False
         brewing = True
     
     if GPIO.input(stopPin):
-        GPIO.output(brewPin, GPIO.LOW)
+        GPIO.output(brewPin, GPIO.HIGH)
         brewing = False
