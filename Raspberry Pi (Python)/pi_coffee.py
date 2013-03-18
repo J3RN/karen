@@ -58,6 +58,9 @@ while True:
     
     if shouldBrew:
         GPIO.output(brewPin, GPIO.HIGH)
+        shouldBrew = False
+        brewing = True
     
     if GPIO.input(stopPin):
         GPIO.output(brewPin, GPIO.LOW)
+        brewing = False
