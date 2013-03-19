@@ -37,6 +37,10 @@ GPIO.setwarnings(False)
 # For the relay, LOW = on, HIGH = off
 GPIO.output(brewPin, GPIO.HIGH)
 
+# Display "Not brewing" by default
+lcd.setCursor(0, 1)
+lcd.message("Not brewing")
+
 while True:
     if time.strftime("%M") != oldMin:        
         lcdTime = time.strftime("%a %b %d %H:%M")
