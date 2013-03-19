@@ -46,7 +46,7 @@ while True:
         oldMin = time.strftime("%M")
         
         lcd.clear()
-        sendString = wDay, month, mDay, timeString
+        sendString = wDay + " " + month + " " + mDay + " " + timeString
         lcd.message(sendString)
     
     if time.strftime("%S") != oldSec:
