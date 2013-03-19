@@ -18,6 +18,7 @@ coffeeTimes = {"Sun 10:00",
                "Sat 10:00"}
 
 lcd = CharLCD.CharLCD()
+lcd.begin(16, 2)
 
 brewPin = 10
 stopPin = 9
@@ -29,6 +30,9 @@ brewing = False
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(brewPin, GPIO.OUT)
 GPIO.setup(stopPin, GPIO.IN)
+
+# Turn off those hideously annoying warnings
+GPIO.setwarnings(False)
 
 # For the relay, LOW = on, HIGH = off
 GPIO.output(brewPin, GPIO.HIGH)
