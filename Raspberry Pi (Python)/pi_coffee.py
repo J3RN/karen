@@ -24,6 +24,7 @@ brewPin = 14
 stopPin = 9
 
 shouldBrew = False
+shouldStop = False
 brewing = False
 
 # Get GPIO components ready
@@ -56,13 +57,23 @@ while True:
     
     if time.strftime("%S") != oldSec:
         conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
-        conn.request("GET", "/should_brew")
-        resp = conn.getresponse()
-        data = resp.read()
         
-        if data == "1":
-            shouldBrew = True
-        
+        if not brewing:
+            conn.request("GET", "/should_brew")
+            resp = conn.getresponse()
+            data = resp.read()
+            
+            if data == "1":
+                shouldBrew = True
+            
+        else:
+            conn.request("GET", "/should_stop")
+            resp = conn.getresponse()
+            data = resp.read()
+            
+            if data == "1":
+                shouldStop = True
+                
         conn.close()
         
         oldSec = time.strftime("%S")
@@ -74,9 +85,12 @@ while True:
         lcd.setCursor(0, 1)
         lcd.message("Brewing    ")
     
-    if GPIO.input(stopPin):
+    if GPIO.input(stopPin) or shouldStop:
         GPIO.output(brewPin, GPIO.LOW)
+        
         brewing = False
+        shouldStop = False        
+        
         lcd.setCursor(0, 1)
         lcd.message("Not brewing")
             
