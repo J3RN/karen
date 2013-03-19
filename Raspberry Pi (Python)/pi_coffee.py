@@ -17,7 +17,7 @@ coffeeTimes = {"Sun 10:00",
                "Fri 8:10"
                "Sat 10:00"}
 
-lcd = CharLCD.CharLCD
+lcd = CharLCD.CharLCD()
 
 brewPin = 10
 stopPin = 9
