@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Renamed Adafruit_CharLCD class
 
-import time
+from time import sleep
 
 class CharLCD:
 
