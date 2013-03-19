@@ -42,6 +42,10 @@ GPIO.output(brewPin, GPIO.LOW)
 lcd.setCursor(0, 1)
 lcd.message("Not brewing")
 
+# A string to hold states
+lcdTime = ""
+brewString = ""
+
 while True:
     if time.strftime("%M") != oldMin:        
         lcdTime = time.strftime("%a %b %d %H:%M")
@@ -51,9 +55,6 @@ while True:
             shouldBrew = True
             
         oldMin = time.strftime("%M")
-        
-        lcd.setCursor(0, 0)
-        lcd.message(lcdTime)
     
     if time.strftime("%S") != oldSec:
         conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
@@ -80,10 +81,11 @@ while True:
     
     if shouldBrew:
         GPIO.output(brewPin, GPIO.HIGH)
+        
         shouldBrew = False
         brewing = True
-        lcd.setCursor(0, 1)
-        lcd.message("Brewing    ")
+        
+        brewString = "Brewing"
     
     if GPIO.input(stopPin) or shouldStop:
         GPIO.output(brewPin, GPIO.LOW)
@@ -91,6 +93,8 @@ while True:
         brewing = False
         shouldStop = False        
         
-        lcd.setCursor(0, 1)
-        lcd.message("Not brewing")
+        brewString = "Not brewing"
+        
+    lcd.clear()
+    lcd.message(lcdTime + "\n" + brewString)
             
