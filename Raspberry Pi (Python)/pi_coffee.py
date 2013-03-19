@@ -44,21 +44,36 @@ lcd.message("Not brewing")
 
 # A string to hold states
 lcdTime = ""
-brewString = ""
+brewString = "Not brewing"
+
+def updateLCD():
+    lcd.clear()
+    lcd.message(lcdTime + "\n" + brewString)
 
 while True:
-    if time.strftime("%M") != oldMin:        
+    # Every minute
+    if time.strftime("%M") != oldMin:
+        # Update the time to display and make a string
+        # for comparison with the morning brew times
         lcdTime = time.strftime("%a %b %d %H:%M")
         compareTime = time.strftime("%a %H:%M")
         
+        # Check if morning coffee should be brewed
         if compareTime in coffeeTimes:
             shouldBrew = True
-            
+        
+        # Reset oldMin
         oldMin = time.strftime("%M")
+        
+        # Show the new time
+        updateLCD()
     
+    # Every second
     if time.strftime("%S") != oldSec:
+        # Connect to the app website
         conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
         
+        # If coffee is brewing, check if it should start
         if not brewing:
             conn.request("GET", "/should_brew")
             resp = conn.getresponse()
@@ -66,7 +81,8 @@ while True:
             
             if data == "1":
                 shouldBrew = True
-            
+                
+        # If coffee is brewing, check if it should stop
         else:
             conn.request("GET", "/should_stop")
             resp = conn.getresponse()
@@ -74,9 +90,11 @@ while True:
             
             if data == "1":
                 shouldStop = True
-                
+        
+        # Close connection to website
         conn.close()
         
+        #update oldSec
         oldSec = time.strftime("%S")
     
     if shouldBrew:
@@ -86,6 +104,7 @@ while True:
         brewing = True
         
         brewString = "Brewing"
+        updateLCD()
     
     if GPIO.input(stopPin) or shouldStop:
         GPIO.output(brewPin, GPIO.LOW)
@@ -94,7 +113,5 @@ while True:
         shouldStop = False        
         
         brewString = "Not brewing"
-        
-    lcd.clear()
-    lcd.message(lcdTime + "\n" + brewString)
+        updateLCD()
             
