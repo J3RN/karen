@@ -17,6 +17,8 @@ coffeeTimes = {"Sun 10:00",
                "Fri 8:10"
                "Sat 10:00"}
 
+lcd = CharLCD()
+
 brewPin = 10
 stopPin = 9
 
@@ -43,7 +45,9 @@ while True:
             
         oldMin = time.strftime("%M")
         
-        print wDay, month, mDay, timeString
+        lcd.clear()
+        sendString = wDay, month, mDay, timeString
+        lcd.message(sendString)
     
     if time.strftime("%S") != oldSec:
         conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
