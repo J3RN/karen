@@ -34,9 +34,6 @@ GPIO.setup(stopPin, GPIO.IN)
 # Turn off those hideously annoying warnings
 GPIO.setwarnings(False)
 
-# For the relay, LOW = on, HIGH = off
-GPIO.output(brewPin, GPIO.HIGH)
-
 # Display "Not brewing" by default
 lcd.setCursor(0, 1)
 lcd.message("Not brewing")
@@ -68,14 +65,14 @@ while True:
         oldSec = time.strftime("%S")
     
     if shouldBrew:
-        GPIO.output(brewPin, GPIO.LOW)
+        GPIO.output(brewPin, GPIO.HIGH)
         shouldBrew = False
         brewing = True
         lcd.setCursor(0, 1)
         lcd.message("Brewing    ")
     
     if GPIO.input(stopPin):
-        GPIO.output(brewPin, GPIO.HIGH)
+        GPIO.output(brewPin, GPIO.LOW)
         brewing = False
         lcd.setCursor(0, 1)
         lcd.message("Not brewing")
