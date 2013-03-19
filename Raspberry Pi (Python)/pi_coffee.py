@@ -57,10 +57,7 @@ while True:
         data = resp.read()
         
         if data == "1":
-            print "Should make coffee!"
             shouldBrew = True
-        else:
-            print "Should not make coffee!"
         
         conn.close()
         
@@ -76,3 +73,5 @@ while True:
     if GPIO.input(stopPin):
         GPIO.output(brewPin, GPIO.HIGH)
         brewing = False
+        lcd.message("Not brewing")
+            
