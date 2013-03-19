@@ -20,7 +20,7 @@ coffeeTimes = {"Sun 10:00",
 lcd = CharLCD.CharLCD()
 lcd.begin(16, 2)
 
-brewPin = 10
+brewPin = 14
 stopPin = 9
 
 shouldBrew = False
