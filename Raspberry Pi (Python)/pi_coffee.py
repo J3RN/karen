@@ -4,6 +4,7 @@
 import time
 import RPi.GPIO as GPIO
 import httplib
+import CharLCD
 
 oldMin = ""
 oldSec = ""
