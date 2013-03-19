@@ -34,20 +34,17 @@ GPIO.setup(stopPin, GPIO.IN)
 GPIO.output(brewPin, GPIO.HIGH)
 
 while True:
-    if time.strftime("%M") != oldMin:
-        wDay = time.strftime("%a")
-        month = time.strftime("%b")
-        mDay = time.strftime("%d")
-        timeString = time.strftime("%H:%M")
+    if time.strftime("%M") != oldMin:        
+        lcdTime = time.strftime("%a %b %d %H:%M")
+        compareTime = time.strftime("%a %H:%M")
         
-        if (wDay + " " + timeString) in coffeeTimes:
+        if compareTime in coffeeTimes:
             shouldBrew = True
             
         oldMin = time.strftime("%M")
         
-        lcd.clear()
-        sendString = wDay + " " + month + " " + mDay + " " + timeString
-        lcd.message(sendString)
+        lcd.setCursor(0, 0)
+        lcd.message(lcdTime)
     
     if time.strftime("%S") != oldSec:
         conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
@@ -69,6 +66,8 @@ while True:
         GPIO.output(brewPin, GPIO.LOW)
         shouldBrew = False
         brewing = True
+        lcd.setCursor(0, 1)
+        lcd.message("Brewing")
     
     if GPIO.input(stopPin):
         GPIO.output(brewPin, GPIO.HIGH)
