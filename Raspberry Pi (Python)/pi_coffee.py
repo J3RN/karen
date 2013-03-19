@@ -77,5 +77,6 @@ while True:
     if GPIO.input(stopPin):
         GPIO.output(brewPin, GPIO.HIGH)
         brewing = False
+        lcd.setCursor(0, 1)
         lcd.message("Not brewing")
             
