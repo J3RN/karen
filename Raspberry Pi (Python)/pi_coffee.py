@@ -56,7 +56,7 @@ while True:
     
     if time.strftime("%S") != oldSec:
         conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
-        conn.request("GET", "/coffee")
+        conn.request("GET", "/should_brew")
         resp = conn.getresponse()
         data = resp.read()
         
