@@ -7,14 +7,6 @@ import RPi.GPIO as GPIO
 import httplib
 import CharLCD
 
-coffeeTimes = {"Sun 10:00", 
-               "Mon 9:20", 
-               "Tue 8:10", 
-               "Wed 8:10",
-               "Thu 8:10",
-               "Fri 8:10"
-               "Sat 10:00"}
-
 # Start up LCD
 lcd = CharLCD.CharLCD()
 lcd.begin(16, 2)
@@ -74,25 +66,11 @@ def stop_brewing():
     update_LCD()
 
 
+lcd.message("Karen 1.1 ♥");
+sleep(1.0)
+
 # Main program
-while True:
-    # Every minute
-    if strftime("%M") != oldMin:
-        # Update the time to display and make a string
-        # for comparison with the morning brew times
-        lcdTime = strftime("%a %b %d %H:%M")
-        compareTime = strftime("%a %H:%M")
-        
-        # Check if morning coffee should be brewed
-        if compareTime in coffeeTimes:
-            shouldBrew = True
-        
-        # Show the new time
-        update_LCD()
-        
-        # Reset oldMin
-        oldMin = strftime("%M")
-        
+while True:        
     # Connect to the app website
     conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
     
@@ -113,9 +91,21 @@ while True:
         
         if data == "1":
             stop_brewing()
-    
+            
     # Close connection to website
     conn.close()
+    
+    # Every minute
+    if strftime("%M") != oldMin:
+        # Update the time to display and make a string
+        # for comparison with the morning brew times
+        lcdTime = strftime("%a %b %d %H:%M")
+
+        # Show the new time
+        update_LCD()
+        
+        # Reset oldMin
+        oldMin = strftime("%M")
     
     # Sleep to decrease processor load
     sleep(1.0)
