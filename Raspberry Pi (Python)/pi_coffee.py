@@ -66,7 +66,7 @@ def stop_brewing():
     update_LCD()
 
 lcd.clear()
-lcd.message("Karen 1.1 ♥");
+lcd.message("Karen 1.1");
 sleep(1.0)
 
 # Main program
