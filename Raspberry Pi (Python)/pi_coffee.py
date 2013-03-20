@@ -65,7 +65,7 @@ def stop_brewing():
     brewString = "Not brewing"
     update_LCD()
 
-
+lcd.clear()
 lcd.message("Karen 1.1 ♥");
 sleep(1.0)
 
