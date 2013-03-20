@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-import time
+from time import sleep
+from time import strftime
 import RPi.GPIO as GPIO
 import httplib
 import CharLCD
-
-oldMin = ""
-oldSec = ""
 
 coffeeTimes = {"Sun 10:00", 
                "Mon 9:20", 
@@ -17,20 +15,19 @@ coffeeTimes = {"Sun 10:00",
                "Fri 8:10"
                "Sat 10:00"}
 
+# Start up LCD
 lcd = CharLCD.CharLCD()
 lcd.begin(16, 2)
 
+# Set pins
 brewPin = 14
-stopPin = 9
 
-shouldBrew = False
-shouldStop = False
+# Not brewing by default
 brewing = False
 
 # Get GPIO components ready
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(brewPin, GPIO.OUT)
-GPIO.setup(stopPin, GPIO.IN)
 
 # Turn off those hideously annoying warnings
 GPIO.setwarnings(False)
@@ -45,73 +42,81 @@ lcd.message("Not brewing")
 # A string to hold states
 lcdTime = ""
 brewString = "Not brewing"
+oldMin = ""
+oldSec = ""
 
-def updateLCD():
+
+# Functions
+def update_LCD():
     lcd.clear()
     lcd.message(lcdTime + "\n" + brewString)
+    
+def start_brewing():
+    # Mod global vars, not create local ones
+    global brewing, brewString    
+    
+    GPIO.output(brewPin, GPIO.HIGH)
+    
+    brewing = True
+    
+    brewString = "Brewing"
+    update_LCD()
+    
+def stop_brewing():
+    # Mod global vars, not create local ones
+    global brewing, brewString    
+    
+    GPIO.output(brewPin, GPIO.LOW)
+            
+    brewing = False     
+    
+    brewString = "Not brewing"
+    update_LCD()
 
+
+# Main program
 while True:
     # Every minute
-    if time.strftime("%M") != oldMin:
+    if strftime("%M") != oldMin:
         # Update the time to display and make a string
         # for comparison with the morning brew times
-        lcdTime = time.strftime("%a %b %d %H:%M")
-        compareTime = time.strftime("%a %H:%M")
+        lcdTime = strftime("%a %b %d %H:%M")
+        compareTime = strftime("%a %H:%M")
         
         # Check if morning coffee should be brewed
         if compareTime in coffeeTimes:
             shouldBrew = True
         
-        # Reset oldMin
-        oldMin = time.strftime("%M")
-        
         # Show the new time
-        updateLCD()
+        update_LCD()
+        
+        # Reset oldMin
+        oldMin = strftime("%M")
+        
+    # Connect to the app website
+    conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
     
-    # Every second
-    if time.strftime("%S") != oldSec:
-        # Connect to the app website
-        conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
+    # If coffee is brewing, check if it should start
+    if not brewing:
+        conn.request("GET", "/should_brew")
+        resp = conn.getresponse()
+        data = resp.read()
         
-        # If coffee is brewing, check if it should start
-        if not brewing:
-            conn.request("GET", "/should_brew")
-            resp = conn.getresponse()
-            data = resp.read()
-            
-            if data == "1":
-                shouldBrew = True
-                
-        # If coffee is brewing, check if it should stop
-        else:
-            conn.request("GET", "/should_stop")
-            resp = conn.getresponse()
-            data = resp.read()
-            
-            if data == "1":
-                shouldStop = True
+        if data == "1":
+            start_brewing()
         
-        # Close connection to website
-        conn.close()
+    # If coffee is brewing, check if it should stop
+    else:
+        conn.request("GET", "/should_stop")
+        resp = conn.getresponse()
+        data = resp.read()
         
-        #update oldSec
-        oldSec = time.strftime("%S")
+        if data == "1":
+            stop_brewing()
     
-    if shouldBrew:
-        GPIO.output(brewPin, GPIO.HIGH)
-        
-        shouldBrew = False
-        brewing = True
-        
-        brewString = "Brewing"
-        updateLCD()
+    # Close connection to website
+    conn.close()
     
-    if GPIO.input(stopPin) or shouldStop:
-        GPIO.output(brewPin, GPIO.LOW)
-        
-        brewing = False
-        shouldStop = False        
-        
-        brewString = "Not brewing"
-        updateLCD()
-            
+    # Sleep to decrease processor load
+    sleep(1.0)
+    
