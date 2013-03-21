@@ -5,6 +5,7 @@ from time import sleep
 from time import strftime
 import RPi.GPIO as GPIO
 import httplib
+from httplib import BadStatusLine
 import CharLCD
 
 # Start up LCD
@@ -65,35 +66,44 @@ def stop_brewing():
     brewString = "Not brewing"
     update_LCD()
 
+def get_web_data(url):
+     # Connect to the app website
+    conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
+    
+    conn.request("GET", url)
+    
+    data = ""    
+    
+    try:
+        resp = conn.getresponse()
+        data = resp.read()
+    except BadStatusLine:
+        print "Caught Bad Status"
+        
+    # Close connection to website
+    conn.close()
+    
+    return data;
+    
 lcd.clear()
 lcd.message("Karen 1.1");
 sleep(1.0)
 
 # Main program
 while True:        
-    # Connect to the app website
-    conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
-    
     # If coffee is brewing, check if it should start
     if not brewing:
-        conn.request("GET", "/should_brew")
-        resp = conn.getresponse()
-        data = resp.read()
+        data = get_web_data("/should_brew")
         
         if data == "1":
             start_brewing()
         
     # If coffee is brewing, check if it should stop
     else:
-        conn.request("GET", "/should_stop")
-        resp = conn.getresponse()
-        data = resp.read()
+        data = get_web_data("/should_stop")
         
         if data == "1":
             stop_brewing()
-            
-    # Close connection to website
-    conn.close()
     
     # Every minute
     if strftime("%M") != oldMin:
