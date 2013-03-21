@@ -5,8 +5,11 @@ from time import sleep
 from time import strftime
 import RPi.GPIO as GPIO
 import httplib
-from httplib import BadStatusLine
 import CharLCD
+
+# Errors
+from httplib import BadStatusLine
+from socket import gaierror
 
 # Start up LCD
 lcd = CharLCD.CharLCD()
@@ -70,15 +73,16 @@ def get_web_data(url):
      # Connect to the app website
     conn = httplib.HTTPConnection("ruby-coffee-maker.herokuapp.com")
     
-    conn.request("GET", url)
-    
     data = ""    
     
     try:
+        conn.request("GET", url)
         resp = conn.getresponse()
         data = resp.read()
     except BadStatusLine:
         print "Caught Bad Status"
+    except gaierror:
+        print "GAIERROR"
         
     # Close connection to website
     conn.close()
