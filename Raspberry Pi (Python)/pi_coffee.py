@@ -9,6 +9,7 @@ import CharLCD
 
 # Errors
 from httplib import BadStatusLine
+from httplib import IncompleteRead
 from socket import gaierror
 
 # Start up LCD
@@ -80,9 +81,11 @@ def get_web_data(url):
         resp = conn.getresponse()
         data = resp.read()
     except BadStatusLine:
-        print "Caught Bad Status"
+        print "Bad Status Line " + lcdTime;
     except gaierror:
-        print "GAIERROR"
+        print "GAIERROR" + lcdTime;
+    except IncompleteRead:
+        print "Incomplete Read" + lcdTime;
         
     # Close connection to website
     conn.close()
