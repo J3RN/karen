@@ -42,8 +42,8 @@ brewString = "Not brewing"
 oldMin = ""
 oldSec = ""
 
-brew = GPIO.LOW
-stopBrew = GPIO.HIGH
+brew = GPIO.HIGH
+stopBrew = GPIO.LOW
 
 # Functions
 def update_LCD():
