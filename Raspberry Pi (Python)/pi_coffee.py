@@ -42,6 +42,8 @@ brewString = "Not brewing"
 oldMin = ""
 oldSec = ""
 
+brew = GPIO.LOW
+stopBrew = GPIO.HIGH
 
 # Functions
 def update_LCD():
@@ -52,7 +54,7 @@ def start_brewing():
     # Mod global vars, not create local ones
     global brewing, brewString    
     
-    GPIO.output(brewPin, GPIO.HIGH)
+    GPIO.output(brewPin, brew)
     
     brewing = True
     
@@ -63,7 +65,7 @@ def stop_brewing():
     # Mod global vars, not create local ones
     global brewing, brewString    
     
-    GPIO.output(brewPin, GPIO.LOW)
+    GPIO.output(brewPin, stopBrew)
             
     brewing = False     
     
