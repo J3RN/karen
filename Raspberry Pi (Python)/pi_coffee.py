@@ -6,6 +6,7 @@ from time import strftime
 import RPi.GPIO as GPIO
 import httplib
 import CharLCD
+import os
 
 # Errors
 from httplib import BadStatusLine
@@ -50,6 +51,9 @@ def update_LCD():
     lcd.clear()
     lcd.message(lcdTime + "\n" + brewString)
     
+def say(something):  
+     os.system('espeak -ven+f2 "{0}"'.format(something))
+    
 def start_brewing():
     # Mod global vars, not create local ones
     global brewing, brewString    
@@ -60,6 +64,7 @@ def start_brewing():
     
     brewString = "Brewing"
     update_LCD()
+    say("Beggining to brew")
     
 def stop_brewing():
     # Mod global vars, not create local ones
@@ -71,6 +76,7 @@ def stop_brewing():
     
     brewString = "Not brewing"
     update_LCD()
+    say("Disabling the coffee maker")
 
 def get_web_data(url):
      # Connect to the app website
