@@ -52,7 +52,7 @@ def update_LCD():
     lcd.message(lcdTime + "\n" + brewString)
     
 def say(something):  
-     os.system('espeak -ven+f2 "{0}"'.format(something))
+     os.system('espeak -ven-us+f2 "{0}"'.format(something))
     
 def start_brewing():
     # Mod global vars, not create local ones
