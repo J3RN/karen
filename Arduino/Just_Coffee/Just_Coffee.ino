@@ -8,10 +8,6 @@
 #define MINUTE 3
 
 // Set pins
-#define DAY_BUTTON 6
-#define HOUR_BUTTON 7
-#define MINUTE_BUTTON 8
-#define COFFEE_BUTTON 9
 #define PIEZO 10
 #define RELAY 13
 
@@ -22,28 +18,10 @@
 // String used to clear a line of the LCD
 const String clearString = "                ";
 
-// Initialize array of month names
-const String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-// Initialize array for days in each month
-const int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-// Initialize days to an array of days of the week
-const String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-
-const String startTimes[] = {"10:00", "09:20", "08:10", "08:10", "08:10", "08:10", "10:00"};
-
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 SimpleTimer timer;
-
-// Initialize time units
-int month = 0;
-int monthDay = 1;
-int weekDay = 0;
-int hour = 0;
-int minute = 0;
 
 // Initialize time strings
 String timeString = "";
@@ -56,11 +34,7 @@ void setup() {
   // Start LCD
   lcd.begin(16, 2);
   
-  // Set the pin modes for buttons and relay
-  pinMode(DAY_BUTTON, INPUT);
-  pinMode(HOUR_BUTTON, INPUT);
-  pinMode(MINUTE_BUTTON, INPUT);
-  pinMode(COFFEE_BUTTON, INPUT);
+  // Set the pin modes for peizo and relay
   pinMode(PIEZO, OUTPUT);
   pinMode(RELAY, OUTPUT);
   
@@ -78,79 +52,7 @@ void loop() {
   // Needed for timer to work
   timer.run();
   
-  // Initialize var to hold button push info
-  int buttonCode = 0;
-  
-  // Find pressed button, if any
-  if (digitalRead(DAY_BUTTON)) {
-    buttonCode = DAY;
-  } else if (digitalRead(HOUR_BUTTON)) {
-    buttonCode = HOUR;
-  } else if (digitalRead(MINUTE_BUTTON)) {
-    buttonCode = MINUTE;
-  }
-  
-  // If the hour button is being pushed, increment
-  // the hour and check and display the time
-  if (buttonCode != 0) {
-    // Wait for possible second button press 
-    delay(DOUBLE_BUTTON_PAUSE);
-    
-    // Check button combos
-    switch (buttonCode) {
-      // Increment weekday, month, or day of the month based
-      // on button combination
-      case DAY:
-        if (digitalRead(MINUTE_BUTTON)) {
-          weekDay++;
-        } else if (digitalRead(HOUR_BUTTON)) {
-          month++;
-        } else {
-          monthDay++; 
-        }
-        
-        break;
-        
-      // Increment month if day is also pressed
-      // Otherwise, increment hour
-      case HOUR:
-        if (digitalRead(DAY_BUTTON)) {
-          month++;
-        } else {
-          hour++;
-        }
-        
-        break;
-        
-      // Increment weekday if day is also pressed
-      // Otherwise, increment minute
-      case MINUTE:
-        if (digitalRead(DAY_BUTTON)) {
-          weekDay++;
-        } else {
-          minute++;
-        }
-        
-        break;
-    }
-    
-    // Display new time
-    checkAndDisplay();
-    
-    // Prevent DEBOUNCE
-    delay(DEBOUNCE - DOUBLE_BUTTON_PAUSE);
-  }
-  
-  // If the force coffee pin is pushed, toggle brew
-  if (digitalRead(COFFEE_BUTTON)) {
-    if (brewing) {
-     stopBrew();
-    } else {
-     brew();
-    }
-    
-    delay(DEBOUNCE);
-  }
+  checkAndDisplay();
 }
 
 /**
