@@ -1,68 +1,128 @@
 #include <SimpleTimer.h>
 #include <LiquidCrystal.h>
 #include "pitches.h"
+#include <SPI.h>
+#include <Ethernet.h>
 
-// Button codes
-#define DAY 1
-#define HOUR 2
-#define MINUTE 3
+byte mac[] = {  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+char serverName[] = "ruby-coffee-maker.herokuapp.com";
+
+EthernetClient client;
 
 // Set pins
 #define PIEZO 10
-#define RELAY 13
+#define RELAY 8
 
-// Delays for button pushing
-#define DOUBLE_BUTTON_PAUSE 100
-#define DEBOUNCE 250
 
 // String used to clear a line of the LCD
 const String clearString = "                ";
 
-// initialize the library with the numbers of the interface pins
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+// Initialize the library with the numbers of the interface pins
+//LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 SimpleTimer timer;
 
-// Initialize time strings
-String timeString = "";
 String lastBrewString = "Never";
 
 // Initialize brewing bool
 boolean brewing = false;
 
 void setup() {
+  Serial.begin(9600);
   // Start LCD
-  lcd.begin(16, 2);
+  // lcd.begin(16, 2);
   
   // Set the pin modes for peizo and relay
   pinMode(PIEZO, OUTPUT);
   pinMode(RELAY, OUTPUT);
   
-  // Update time every minute
-  timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
-  
-  // Check time and print to LCD
-  checkAndDisplay();
-  
   // Relay is set to LOW by default, so stop it
   stopBrew();
+  
+  if (Ethernet.begin(mac) == 0) {
+    //lcd.setCursor(0, 0);
+    //lcd.write("I have failed");
+    Serial.println("ETH FAIL");
+    
+    while(true) {}
+  }
+  
+  // Give the Ethernet shield a second to initialize
+  delay(1000);
 }
 
 void loop() {
   // Needed for timer to work
-  timer.run();
+  //timer.run();
   
-  checkAndDisplay();
+  if (brewing) {
+    checkStopCoffee();
+  } else {
+    checkMakeCoffee();
+  }
+  
+  // Delay for the server's sake
+  delay(1000);
 }
 
 /**
- * Check if coffee should be made based on the current time
+ * Check if coffee should be made based on a request made to Heroku
  */
 void checkMakeCoffee() {
-  // If the time matches for today, make coffee
-  if (timeString = startTimes[weekDay]) {
+  // Sends a request to Heroku
+  char lastChar = '0';
+  
+  if (client.connect(serverName, 80)) {    
+    // Make a HTTP request
+    client.println("GET /should_brew HTTP/1.1");
+    client.print("Host: ");
+    client.println(serverName);
+    client.println();
+    
+    // Wait for response
+    while (!client.available());
+
+    while (client.available()) {
+      char c = client.read();
+      lastChar = c;
+    }
+    
+    client.stop();
+  }
+  
+  // If should brew, brew
+  if (lastChar == '1') {
     brew();
   }
+}
+
+// Checks Heroku to see if the coffee maker should be stopped
+void checkStopCoffee() {
+  // Sends a request to Heroku
+  char lastChar = '0';
+  
+  if (client.connect(serverName, 80)) {    
+    // Make a HTTP request
+    client.println("GET /should_stop HTTP/1.1");
+    client.print("Host: ");
+    client.println(serverName);
+    client.println();
+    
+    // Wait for response
+    while (!client.available());
+
+    while (client.available()) {
+      char c = client.read();
+      lastChar = c;
+    }
+    
+    client.stop();
+  }
+  
+  // If should stop brewing, stop brewing
+  if (lastChar == '1') {
+    stopBrew();
+  }  
 }
 
 /**
@@ -77,10 +137,10 @@ void brew() {
   
   // Sound a tone signalling brewing
   tone(PIEZO, NOTE_B5, 500);
-
-  // Set lastBrewString to the current timeString
-  lastBrewString = timeString;
   
+  Serial.println("Brew");
+  
+  /*
   // Clear line 2 of the LCD
   lcd.setCursor(0, 1);
   lcd.print("                ");
@@ -88,8 +148,10 @@ void brew() {
   // Write the start time for the coffee on line 2 of the LCD
   lcd.setCursor(0, 1);
   lcd.print("Brew Since " + lastBrewString);
+  */
 }
 
+// Turn the relay off (HIGH)
 void stopBrew() {
   // Update brewing
   brewing = false;
@@ -97,6 +159,9 @@ void stopBrew() {
   // Turn off the relay
   digitalWrite(RELAY, HIGH);
   
+  Serial.println("Stop brew");
+  
+  /*
   // Clear line 2 of the LCD
   lcd.setCursor(0, 1);
   lcd.print(clearString);
@@ -104,92 +169,7 @@ void stopBrew() {
   // Write the time of last brew on line 2 of the LCD
   lcd.setCursor(0, 1);
   lcd.print("Last Brew: " + lastBrewString);
+  */
 }
 
 
-/**
- * Update the time and display it
- */
-void updateTime() {
-  // Update minute
-  minute++;
-  
-  // Check and display the time
-  checkAndDisplay();
-  
-  // Check if coffee should be made
-  checkMakeCoffee();
-}
-
-
-/**
- * Check if any time values need to be changed
- */
-void checkTime() {
-  // If minute is 60, update hour and minute
-  if (minute == 60) {
-    hour++;
-    minute = 0;
-  }
-  
-  if (hour == 24) {
-    weekDay++;
-    monthDay++;
-    hour = 0;
-  }
-    
-  if (weekDay == 7) {
-    weekDay = 0;
-  }
-  
-  if (monthDay > monthDays[month]) {
-    month++;
-    monthDay = 1;
-  }
-  
-  if (month == 12) {
-    month = 0;
-  }
-}
-
-/*
- * Updates timeString to signify the surrent time
- */
-void setTimeString() {
-  // Create string versions of hour and minute
-  String hourString = String(hour);
-  String minuteString = String(minute);
-  
-  // Add a "0" to the front of numbers under 10
-  if (hour < 10) {
-    hourString = "0" + hourString;
-  }
-  
-  // Add a "0" to the front of numbers under 10
-  if (minute < 10) {
-    minuteString = "0" + minuteString;
-  }
-  
-  // Update timeString
-  timeString = hourString + ":" + minuteString;
-}
-
-/**
- * Display the current time on the LCD
- */
-void showTime() {
-  // Display time on line 0 of the LCD
-  lcd.setCursor(0, 0);
-  lcd.print(clearString);
-  lcd.setCursor(0, 0);
-  lcd.print(days[weekDay] + " " + months[month] + " " + String(monthDay) + " " + timeString);
-}
-
-/**
- * Check time values, set the time string, and display the time
- */
-void checkAndDisplay() {
-  checkTime();
-  setTimeString();
-  showTime();
-}
