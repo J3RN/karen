@@ -4,13 +4,16 @@
 #include <Ethernet.h>
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-char serverName[] = "ruby-coffee-maker.herokuapp.com";
+const char serverName[] = "ruby-coffee-maker.herokuapp.com";
 
 EthernetClient client;
 
 // Set pins
 #define PIEZO 10
 #define RELAY 8
+
+// Set request timeout
+#define TIMEOUT 5000
 
 // Initialize brewing bool
 boolean brewing = false;
@@ -25,20 +28,15 @@ void setup() {
   // Relay is set to LOW by default, so stop it
   stopBrew();
   
-  if (Ethernet.begin(mac) == 0) {
+  if (Ethernet.begin(mac) == 0) {-
     Serial.println("ETH FAIL");
     
     // Continue on forevermore
-    while(true) {}
+    while(true);
   }
   
   // Print IP address
-  Serial.print("My IP address: ");
-  for (byte thisByte = 0; thisByte < 4; thisByte++) {
-    Serial.print(Ethernet.localIP()[thisByte], DEC);
-    Serial.print("."); 
-  }
-  Serial.println();
+  printIP();
   
   // Give the Ethernet shield a second to initialize
   delay(1000);
@@ -56,6 +54,17 @@ void loop() {
   delay(1000);
 }
 
+void printIP() {
+  Serial.print("My IP address: ");
+  
+  for (byte thisByte = 0; thisByte < 4; thisByte++) {
+    Serial.print(Ethernet.localIP()[thisByte], DEC);
+    Serial.print("."); 
+  }
+  
+  Serial.println();
+}
+
 /**
  * Check if coffee should be made based on a request made to Heroku
  */
@@ -71,11 +80,21 @@ void checkMakeCoffee() {
     client.println();
     
     // Wait for response
-    while (!client.available());
+    unsigned long start_time = millis();
+    boolean timed_out = false;
+    while (!client.available() && !timed_out) {
+      if (millis() - start_time >= TIMEOUT) {
+        timed_out = true;
+      }
+    }
 
-    while (client.available()) {
-      char c = client.read();
-      lastChar = c;
+    if(!timed_out) {
+      while (client.available()) {
+        char c = client.read();
+        lastChar = c;
+      }
+    } else {
+      Serial.println("Timed out");
     }
     
     client.stop();
@@ -86,6 +105,7 @@ void checkMakeCoffee() {
     brew();
   } else if (lastChar != '0') {
     Serial.println("Connection failure");
+    printIP();
     while(true);
   }
 }
@@ -103,11 +123,21 @@ void checkStopCoffee() {
     client.println();
     
     // Wait for response
-    while (!client.available());
-
-    while (client.available()) {
-      char c = client.read();
-      lastChar = c;
+    unsigned long start_time = millis();
+    boolean timed_out = false;
+    while (!client.available() && !timed_out) {
+      if (millis() - start_time >= TIMEOUT) {
+        timed_out = true;
+      }
+    }
+ 
+    if(!timed_out) {
+      while (client.available()) {
+        char c = client.read();
+        lastChar = c;
+      }
+    } else {
+      Serial.println("Timed out");
     }
     
     client.stop();
@@ -118,6 +148,7 @@ void checkStopCoffee() {
     stopBrew();
   } else if (lastChar != '0') {
     Serial.println("Connection failure");
+    printIP();
     while(true);
   }
 }
