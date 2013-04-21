@@ -69,55 +69,25 @@ void printIP() {
  * Check if coffee should be made based on a request made to Heroku
  */
 void checkMakeCoffee() {
-  // Sends a request to Heroku
-  char lastChar = '0';
-  
-  if (client.connect(serverName, 80)) {    
-    // Make a HTTP request
-    client.println("GET /should_brew HTTP/1.1");
-    client.print("Host: ");
-    client.println(serverName);
-    client.println();
-    
-    // Wait for response
-    unsigned long start_time = millis();
-    boolean timed_out = false;
-    while (!client.available() && !timed_out) {
-      if (millis() - start_time >= TIMEOUT) {
-        timed_out = true;
-      }
-    }
-
-    if(!timed_out) {
-      while (client.available()) {
-        char c = client.read();
-        lastChar = c;
-      }
-    } else {
-      Serial.println("Timed out");
-    }
-    
-    client.stop();
-  }
-  
-  // If should brew, brew
-  if (lastChar == '1') {
+  if(checkCoffeeLink("/should_brew")) {
     brew();
-  } else if (lastChar != '0') {
-    Serial.println("Connection failure");
-    printIP();
-    while(true);
   }
 }
 
 // Checks Heroku to see if the coffee maker should be stopped
 void checkStopCoffee() {
-  // Sends a request to Heroku
+  if(checkCoffeeLink("/should_stop")) {
+    stopBrew();
+  }
+}
+
+boolean checkCoffeeLink(String link) {
+  boolean should = false;
   char lastChar = '0';
   
   if (client.connect(serverName, 80)) {    
     // Make a HTTP request
-    client.println("GET /should_stop HTTP/1.1");
+    client.println("GET " + link + " HTTP/1.1");
     client.print("Host: ");
     client.println(serverName);
     client.println();
@@ -145,12 +115,14 @@ void checkStopCoffee() {
   
   // If should stop brewing, stop brewing
   if (lastChar == '1') {
-    stopBrew();
+    should = true;
   } else if (lastChar != '0') {
     Serial.println("Connection failure");
     printIP();
     while(true);
   }
+  
+  return should;
 }
 
 /**
