@@ -9,8 +9,8 @@ const char serverName[] = "ruby-coffee-maker.herokuapp.com";
 EthernetClient client;
 
 // Set pins
-#define PIEZO 2
-#define RELAY 3
+#define PIEZO 10
+#define RELAY 8
 
 // Set request timeout
 #define TIMEOUT 5000
