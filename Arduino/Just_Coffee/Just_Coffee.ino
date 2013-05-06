@@ -181,7 +181,7 @@ void loop() {
  */
 void checkMakeCoffee() {
   // If the time matches for today, make coffee
-  if (timeString = startTimes[weekDay]) {
+  if (timeString == startTimes[weekDay]) {
     brew();
   }
 }
