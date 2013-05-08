@@ -1,8 +1,9 @@
 /*
- * An application to turn on a coffee maker every morning
+ * A script to turn on a coffee maker every morning by flipping a relay. Additionally, it displays the current 
+ * time and date on an LCD screen and a piezo speaker beeps when coffee is being made.
  *
  * Author: Jonathan Arnett
- * Modified: 5/6/2013
+ * Modified: 05/08/2013
  *
  * Pins:
  *  Day      6
@@ -59,6 +60,7 @@ const String startTimes[] = {"08:00", "08:00", "08:00", "08:00", "08:00", "08:00
 // Initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
+// A timer that allows the clock to function
 SimpleTimer timer;
 
 // Initialize time units
@@ -72,7 +74,7 @@ int minute = 0;
 String timeString = "";
 String lastBrewString = "Never";
 
-// Initialize brewing bool
+// Initialize brewing boolean
 boolean brewing = false;
 
 void setup() {

@@ -1,8 +1,22 @@
+/*
+ * This is a script that relies on a web app to know when to brew coffee. A relay is triggered
+ * when the script parses that coffee should be made. It also causes a piezo speaker to beep.
+ *
+ * The URL provided is my own personal implementation of the web app and it is highly advised
+ * that you make a separate implementation elsewhere and change the URL accordingly. You can 
+ * find the code for the web app at http://github.com/jonarnett90/Ruby-Coffee-Maker .
+ *
+ * Author: Jonathan Arnett <joanrnett90@gmail.com>
+ * Modified: 05/08/2013
+ *
+ */
+
 #include <SimpleTimer.h>
 #include "pitches.h"
 #include <SPI.h>
 #include <Ethernet.h>
 
+// Info needed for requests. Both should be customized to your setup
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 const char serverName[] = "ruby-coffee-maker.herokuapp.com";
 
