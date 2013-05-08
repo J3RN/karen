@@ -10,7 +10,7 @@
  *  Hour     7
  *  Minute   8
  *  Control  9
- *  Piezo    10
+ *  Servo    10
  *  Relay    13
  *  LCD RS   12
  *  LCD EN   11
