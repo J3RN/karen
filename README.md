@@ -8,4 +8,6 @@ This repository contains code for:
 - Arduino time-based brewing and blinds control
 - Arduino internet-controlled brewing
 - Raspberry Pi time-and-internet-controlled brewing
-- The webapp responsible for managing the internet-controlled brewing (formerly known as Ruby-Coffee-Maker)
+- A webapp responsible for managing the internet-controlled brewing (formerly known as Ruby-Coffee-Maker)
+- An Android remote control app for internet-controlled brewing
+
