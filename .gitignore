@@ -3,3 +3,9 @@
 .spyderproject
 */.spyderworkspace
 .spyderworkspace
+
+# Eclipse files
+*/.settings
+*/.classpath
+*/.project
+
