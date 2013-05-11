@@ -1,3 +1,7 @@
+# A web app to act as a middleman between the user and the coffee maker
+# Author: Jonathan Arnett
+# Modified: 05/10/2013
+
 require 'sinatra'
 require './CoffeeMaker.rb'
 

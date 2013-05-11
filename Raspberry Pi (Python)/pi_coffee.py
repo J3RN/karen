@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
+# Raspberry Pi code to control a relay and an LCD screen
+# Author: Jonathan Arnett
+# Modified: 05/10/2013
+
 from time import sleep
 from time import strftime
 import RPi.GPIO as GPIO

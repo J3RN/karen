@@ -1,3 +1,7 @@
+# Holds the state of the coffee maker and allows it to be referenced
+# Author: Jonathan Arnett
+# Modified: 05/10/2013
+
 class CoffeeMaker
 	def initialize
 		@shouldBrew = false, @shouldStop = false, @brewing = false
