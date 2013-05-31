@@ -128,9 +128,8 @@ void loop() {
  */
 void setTime() {
 	lcdWriteTop("Month?");
-	lcdWriteBottom(months[month]);
 	
-	while(!digitalRead(CONTROL_BUTTON)) {
+	do {
 		if (digitalRead(UP_BUTTON)) {
 			month++;
 			if (month > 11) {
@@ -142,9 +141,13 @@ void setTime() {
 				month = 11;
 			}
 		}
+
+		lcdWriteBottom(months[month]);
 		
 		delay(DEBOUNCE);
-	}
+	} while(!digitalRead(CONTROL_BUTTON));
+
+	checkAndDisplay();
 }
 
 /*
