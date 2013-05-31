@@ -6,10 +6,10 @@
  * Modified: 05/31/2013
  *
  * Pins:
- *  Day		6
- *  Hour	7
- *  Minute	8
- *  Control	9
+ *  Control	6
+ *  Up		7
+ *  Down	8
+ *  Brew	9
  *  Piezo	10
  *  Relay	13
  *  LCD RS	12
