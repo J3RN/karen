@@ -6,18 +6,18 @@
  * Modified: 05/08/2013
  *
  * Pins:
- *  Day      6
- *  Hour     7
- *  Minute   8
- *  Control  9
- *  Piezo    10
- *  Relay    13
- *  LCD RS   12
- *  LCD EN   11
- *  LCD D4   5
- *  LCD D5   4
- *  LCD D6   3
- *  LCD D7   2
+ *  Day		6
+ *  Hour	7
+ *  Minute	8
+ *  Control	9
+ *  Piezo	10
+ *  Relay	13
+ *  LCD RS	12
+ *  LCD EN	11
+ *  LCD D4	5
+ *  LCD D5	4
+ *  LCD D6	3
+ *  LCD D7	2
  *
  * For LCD V0, 2,200 ohms works for me (r-r-r).
  */
