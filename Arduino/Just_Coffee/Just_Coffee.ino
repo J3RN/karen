@@ -93,8 +93,8 @@ void setup() {
   timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
   
   // Show a start-up splash for a second
-  lcdWriteTop("Karen v1.3");
-  delay(1000);
+  lcdWriteTop("Karen v1.3.1");
+  delay(2000);
 
   // Check time and print to LCD
   checkAndDisplay();
