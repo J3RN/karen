@@ -138,12 +138,16 @@ void loop() {
  */
 void setTime() {
 	for (int i = 0; i < NUM_TIME_VALS; i++) {
+		// Prompt user for this time val
 		lcdWriteTop(timeValNames[i] + "?");
-	
+		
+		// Write time and adjust value as requested
 		do {
+			// If the up button is pressed, increment this time val
 			if (digitalRead(UP_BUTTON)) {
 				timeVals[i]++;
 				
+				// Check value and adjust as necessary
 				if (!i == MONTH_DAY) {
 					if (timeVals[i] = maxi[i]) {
 						timeVals[i] = 0;
@@ -153,19 +157,13 @@ void setTime() {
 						timeVals[i] = 1;
 					}
 				}
-				
-				if (i == MONTH) {
-					lcdWriteBottom(months[timeVals[i]]);
-				} else if (i == WEEKDAY) {
-					lcdWriteBottom(days[timeVals[i]]);
-				} else {
-					lcdWriteBottom(String(timeVals[i]));
-				}
 
 				delay(DEBOUNCE);
+			// If the down button is pressed, decrement this time val
 			} else if (digitalRead(DOWN_BUTTON)) {
 				timeVals[i]--;
 				
+				// Check value and adjust as necessary
 				if (!i == MONTH_DAY) {
 					if (timeVals[i] < 0) {
 						timeVals[i] = maxi[i] - 1;
@@ -176,22 +174,25 @@ void setTime() {
 					}
 				}
 
-				if (i == MONTH) {
-					lcdWriteBottom(months[timeVals[i]]);
-				} else if (i == WEEKDAY) {
-					lcdWriteBottom(days[timeVals[i]]);
-				} else {
-					lcdWriteBottom(String(timeVals[i]));
-				}
-
 				delay(DEBOUNCE);
 			}
+			
+			// Write the appropriate value to show the user their changes
+			if (i == MONTH) {
+				lcdWriteBottom(months[timeVals[i]]);
+			} else if (i == WEEKDAY) {
+				lcdWriteBottom(days[timeVals[i]]);
+			} else {
+				lcdWriteBottom(String(timeVals[i]));
+			}
 		} while(!digitalRead(CONTROL_BUTTON));
-
-		checkAndDisplay();
-
+		
+		// Debounce the control button
 		delay(DEBOUNCE);
 	}
+
+	// Have this function check and display
+	checkAndDisplay();
 }
 
 /*
