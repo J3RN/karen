@@ -77,9 +77,9 @@ void setup() {
   lcd.begin(16, 2);
   
   // Set the pin modes for buttons and relay
-  pinMode(DAY_BUTTON, INPUT);
-  pinMode(HOUR_BUTTON, INPUT);
-  pinMode(MINUTE_BUTTON, INPUT);
+  pinMode(CONTROL_BUTTON, INPUT);
+  pinMode(UP_BUTTON, INPUT);
+  pinMode(DOWN_BUTTON, INPUT);
   pinMode(COFFEE_BUTTON, INPUT);
   pinMode(PIEZO, OUTPUT);
   pinMode(RELAY, OUTPUT);
@@ -90,6 +90,9 @@ void setup() {
   // Show a start-up splash for a second
   lcdWriteTop("Karen v1.4.0");
   delay(2000);
+
+  // Have the user set the time
+  setTime();
 
   // Check time and print to LCD
   checkAndDisplay();
@@ -102,6 +105,7 @@ void loop() {
   // Needed for timer to work
   timer.run();
   
+  // If the user presses the control button, have them set the time
   if (digitalRead(CONTROL_BUTTON)) {
 	setTime();
   }
@@ -124,7 +128,23 @@ void loop() {
  */
 void setTime() {
 	lcdWriteTop("Month?");
-	lcdWriteBottom(months[month]);	
+	lcdWriteBottom(months[month]);
+	
+	while(!digitalRead(CONTROL_BUTTON)) {
+		if (digitalRead(UP_BUTTON)) {
+			month++;
+			if (month > 11) {
+				month = 1;
+			}
+		} else if (digitalRead(DOWN_BUTTON)) {
+			month--;
+			if (month < 0) {
+				month = 11;
+			}
+		}
+		
+		delay(DEBOUNCE);
+	}
 }
 
 /*
