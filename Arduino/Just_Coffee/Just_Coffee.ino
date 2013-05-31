@@ -3,7 +3,7 @@
  * time and date on an LCD screen and a piezo speaker beeps when coffee is being made.
  *
  * Author: Jonathan Arnett
- * Modified: 05/08/2013
+ * Modified: 05/31/2013
  *
  * Pins:
  *  Day		6
@@ -178,6 +178,33 @@ void loop() {
   }
 }
 
+
+/*
+ * Write the given text across the top of the LCD
+ */
+void lcdWriteTop(String text) {
+	// Clear top line
+	lcd.setCursor(0, 0);
+	lcd.print(clearString);
+	
+	lcd.setCursor(0, 0);
+	lcd.print(text);
+}
+
+
+/*
+ * Write the given text across the bottom line of the LCD
+ */
+void lcdWriteBottom(String text) {
+	// Clear top line
+	lcd.setCursor(0, 1);
+	lcd.print(clearString);
+	
+	lcd.setCursor(0, 1);
+	lcd.print(text);
+}
+
+
 /**
  * Check if coffee should be made based on the current time
  */
@@ -187,6 +214,7 @@ void checkMakeCoffee() {
     brew();
   }
 }
+
 
 /**
  * Starts making coffee and displays a message
@@ -204,15 +232,15 @@ void brew() {
   // Set lastBrewString to the current timeString
   lastBrewString = timeString;
   
-  // Clear line 2 of the LCD
-  lcd.setCursor(0, 1);
-  lcd.print("                ");
-  
   // Write the start time for the coffee on line 2 of the LCD
-  lcd.setCursor(0, 1);
-  lcd.print("Brew Since " + lastBrewString);
+  lcdWriteBottom("Brew Since " + lastBrewString);
 }
 
+
+/*
+ * Turn off the coffee maker, update appropriate variables, and display that
+ * brewing has stopped
+ */
 void stopBrew() {
   // Update brewing
   brewing = false;
@@ -220,13 +248,8 @@ void stopBrew() {
   // Turn off the relay
   digitalWrite(RELAY, HIGH);
   
-  // Clear line 2 of the LCD
-  lcd.setCursor(0, 1);
-  lcd.print(clearString);
-  
   // Write the time of last brew on line 2 of the LCD
-  lcd.setCursor(0, 1);
-  lcd.print("Last Brew: " + lastBrewString);
+  lcdWriteBottom("Last Brew: " + lastBrewString);
 }
 
 
@@ -275,6 +298,7 @@ void checkTime() {
   }
 }
 
+
 /*
  * Updates timeString to signify the surrent time
  */
@@ -297,16 +321,6 @@ void setTimeString() {
   timeString = hourString + ":" + minuteString;
 }
 
-/**
- * Display the current time on the LCD
- */
-void showTime() {
-  // Display time on line 0 of the LCD
-  lcd.setCursor(0, 0);
-  lcd.print(clearString);
-  lcd.setCursor(0, 0);
-  lcd.print(days[weekDay] + " " + months[month] + " " + String(monthDay) + " " + timeString);
-}
 
 /**
  * Check time values, set the time string, and display the time
@@ -314,6 +328,6 @@ void showTime() {
 void checkAndDisplay() {
   checkTime();
   setTimeString();
-  showTime();
+  lcdWriteTop(days[weekDay] + " " + months[month] + " " + String(monthDay) + " " + timeString);
 }
 
