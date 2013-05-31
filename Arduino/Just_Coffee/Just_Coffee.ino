@@ -35,7 +35,6 @@
 #define RELAY 13
 
 // Delays for button pushing
-#define DOUBLE_BUTTON_PAUSE 100
 #define DEBOUNCE 250
 
 // Indexes for accessing specific time vars
@@ -52,7 +51,8 @@
 const String clearString = "                ";
 
 // Initialize array of month names
-const String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+const String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+						"Sep", "Oct", "Nov", "Dec"};
 
 // Initialize array for days in each month
 const int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -60,7 +60,8 @@ const int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 // Initialize days to an array of days of the week
 const String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-const String startTimes[] = {"08:00", "08:00", "08:00", "08:00", "08:00", "08:00", "08:00"};
+const String startTimes[] = {"08:00", "08:00", "08:00", "08:00", "08:00", 
+							"08:00", "08:00"};
 
 // Initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
@@ -77,6 +78,7 @@ int timeVals[] = {0, 1, 0, 0, 0};
 
 // Initialize time strings
 String timeString = "";
+String brewString = "";
 String lastBrewString = "Never";
 
 // Initialize brewing boolean
@@ -84,32 +86,29 @@ boolean brewing = false;
 
 
 void setup() {
-  // Start LCD
-  lcd.begin(16, 2);
-  
-  // Set the pin modes for buttons and relay
-  pinMode(CONTROL_BUTTON, INPUT);
-  pinMode(UP_BUTTON, INPUT);
-  pinMode(DOWN_BUTTON, INPUT);
-  pinMode(COFFEE_BUTTON, INPUT);
-  pinMode(PIEZO, OUTPUT);
-  pinMode(RELAY, OUTPUT);
-  
-  // Update time every minute
-  timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
-  
-  // Show a start-up splash for a second
-  lcdWriteTop("Karen v1.4.0");
-  delay(2000);
+	// Start LCD
+	lcd.begin(16, 2);
 
-  // Have the user set the time
-  setTime();
+	// Set the pin modes for buttons and relay
+	pinMode(CONTROL_BUTTON, INPUT);
+	pinMode(UP_BUTTON, INPUT);
+	pinMode(DOWN_BUTTON, INPUT);
+	pinMode(COFFEE_BUTTON, INPUT);
+	pinMode(PIEZO, OUTPUT);
+	pinMode(RELAY, OUTPUT);
+	
+	// Relay is set to LOW by default, so stop it
+	stopBrew();
 
-  // Check time and print to LCD
-  checkAndDisplay();
-  
-  // Relay is set to LOW by default, so stop it
-  stopBrew();
+	// Update time every minute
+	timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
+
+	// Show a start-up splash for two seconds
+	lcdWriteTop("Karen v1.4.0");
+	delay(2000);
+
+	// Have the user set the time
+  	setTime();
 }
 
 
@@ -258,20 +257,21 @@ void checkMakeCoffee() {
  * Starts making coffee and displays a message
  */
 void brew() {
-  // Update brewing
-  brewing = true;
-  
-  // Turn the relay on, turning the coffee maker on
-  digitalWrite(RELAY, LOW);
-  
-  // Sound a tone signalling brewing
-  tone(PIEZO, NOTE_B5, 500);
+	// Update brewing
+	brewing = true;
 
-  // Set lastBrewString to the current timeString
-  lastBrewString = timeString;
-  
-  // Write the start time for the coffee on line 2 of the LCD
-  lcdWriteBottom("Brew Since " + lastBrewString);
+	// Turn the relay on, turning the coffee maker on
+	digitalWrite(RELAY, LOW);
+
+	// Sound a tone signalling brewing
+	tone(PIEZO, NOTE_B5, 500);
+
+	// Set lastBrewString to the current timeString
+	lastBrewString = timeString;
+
+	// Update the brew message and display it
+	brewString = "Brew Since " + lastBrewString;
+	checkAndDisplay();
 }
 
 
@@ -280,14 +280,15 @@ void brew() {
  * brewing has stopped
  */
 void stopBrew() {
-  // Update brewing
-  brewing = false;
-  
-  // Turn off the relay
-  digitalWrite(RELAY, HIGH);
-  
-  // Write the time of last brew on line 2 of the LCD
-  lcdWriteBottom("Last Brew: " + lastBrewString);
+	// Update brewing
+	brewing = false;
+
+	// Turn off the relay
+	digitalWrite(RELAY, HIGH);
+
+	// Update the brew message and display it
+	brewString = "Last Brew: " + lastBrewString;
+  	checkAndDisplay();
 }
 
 
@@ -367,12 +368,15 @@ void setTimeString() {
  * Check time values, set the time string, and display the time
  */
 void checkAndDisplay() {
-  checkTime();
-  setTimeString();
-  lcdWriteTop(days[timeVals[WEEKDAY]] + " "
-	+ months[timeVals[MONTH]] + " "
-	+ String(timeVals[MONTH_DAY]) + " "
+	checkTime();
+	setTimeString();
+	
+	lcdWriteTop(days[timeVals[WEEKDAY]] + " " 
+	+ months[timeVals[MONTH]] + " " 
+	+ String(timeVals[MONTH_DAY]) + " " 
 	+ timeString);
+	
+	lcdWriteBottom(brewString);
 }
 
 
