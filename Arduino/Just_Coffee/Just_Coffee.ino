@@ -26,15 +26,10 @@
 #include <LiquidCrystal.h>
 #include "pitches.h"
 
-// Button codes
-#define DAY 1
-#define HOUR 2
-#define MINUTE 3
-
 // Set pins
-#define DAY_BUTTON 6
-#define HOUR_BUTTON 7
-#define MINUTE_BUTTON 8
+#define CONTROL_BUTTON 6
+#define UP_BUTTON 7
+#define DOWN_BUTTON 8
 #define COFFEE_BUTTON 9
 #define PIEZO 10
 #define RELAY 13
@@ -93,7 +88,7 @@ void setup() {
   timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
   
   // Show a start-up splash for a second
-  lcdWriteTop("Karen v1.3.1");
+  lcdWriteTop("Karen v1.4.0");
   delay(2000);
 
   // Check time and print to LCD
@@ -182,6 +177,14 @@ void loop() {
   }
 }
 
+
+/*
+ * Has the user set all the time values
+ */
+void setTime() {
+	lcdWriteTop("Month?");
+	lcdWriteBottom(months[month]);	
+}
 
 /*
  * Write the given text across the top of the LCD
