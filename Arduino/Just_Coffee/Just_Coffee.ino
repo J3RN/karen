@@ -38,6 +38,16 @@
 #define DOUBLE_BUTTON_PAUSE 100
 #define DEBOUNCE 250
 
+// Indexes for accessing specific time vars
+#define MONTH 1
+#define MONTH_DAY 2
+#define WEEKDAY 3
+#define HOUR 4
+#define MINUTE 5
+
+// Constant for number of time vals
+#define NUM_TIME_VALS 5
+
 // String used to clear a line of the LCD
 const String clearString = "                ";
 
@@ -64,13 +74,6 @@ const String timeValNames[] =
 // Month day will have to be checked separately because months are weird
 const int maxi[] = {12, 0, 7, 24, 60};
 int timeVals[] = {0, 1, 0, 0, 0};
-
-// Initialize time units
-int month = 0;
-int monthDay = 1;
-int weekDay = 0;
-int hour = 0;
-int minute = 0;
 
 // Initialize time strings
 String timeString = "";
@@ -134,27 +137,61 @@ void loop() {
  * Has the user set all the time values
  */
 void setTime() {
-	lcdWriteTop("Month?");
+	for (int i = 0; i < NUM_TIME_VALS; i++) {
+		lcdWriteTop(timeValNames[i] + "?");
 	
-	do {
-		if (digitalRead(UP_BUTTON)) {
-			month++;
-			if (month > 11) {
-				month = 1;
-			}
-		} else if (digitalRead(DOWN_BUTTON)) {
-			month--;
-			if (month < 0) {
-				month = 11;
-			}
-		}
+		do {
+			if (digitalRead(UP_BUTTON)) {
+				timeVals[i]++;
+				
+				if (!i == MONTH_DAY) {
+					if (timeVals[i] = maxi[i]) {
+						timeVals[i] = 0;
+					}
+				} else {
+					if (timeVals[i] > monthDays[i]) {
+						timeVals[i] = 1;
+					}
+				}
+				
+				if (i == MONTH) {
+					lcdWriteBottom(months[timeVals[i]]);
+				} else if (i == WEEKDAY) {
+					lcdWriteBottom(days[timeVals[i]]);
+				} else {
+					lcdWriteBottom(String(timeVals[i]));
+				}
 
-		lcdWriteBottom(months[month]);
-		
+				delay(DEBOUNCE);
+			} else if (digitalRead(DOWN_BUTTON)) {
+				timeVals[i]--;
+				
+				if (!i == MONTH_DAY) {
+					if (timeVals[i] < 0) {
+						timeVals[i] = maxi[i] - 1;
+					}
+				} else {
+					if (timeVals[i] == 0) {
+						timeVals[i] = monthDays[i];
+					}
+				}
+
+				if (i == MONTH) {
+					lcdWriteBottom(months[timeVals[i]]);
+				} else if (i == WEEKDAY) {
+					lcdWriteBottom(days[timeVals[i]]);
+				} else {
+					lcdWriteBottom(String(timeVals[i]));
+				}
+
+				delay(DEBOUNCE);
+			}
+		} while(!digitalRead(CONTROL_BUTTON));
+
+		checkAndDisplay();
+
 		delay(DEBOUNCE);
-	} while(!digitalRead(CONTROL_BUTTON));
-
-	checkAndDisplay();
+	}
 }
 
 /*
@@ -188,7 +225,7 @@ void lcdWriteBottom(String text) {
  */
 void checkMakeCoffee() {
   // If the time matches for today, make coffee
-  if (timeString == startTimes[weekDay]) {
+  if (timeString == startTimes[timeVals[WEEKDAY]]) {
     brew();
   }
 }
@@ -236,7 +273,7 @@ void stopBrew() {
  */
 void updateTime() {
   // Update minute
-  minute++;
+  timeVals[MINUTE]++;
   
   // Check and display the time
   checkAndDisplay();
@@ -250,30 +287,33 @@ void updateTime() {
  * Check if any time values need to be changed
  */
 void checkTime() {
-  // If minute is 60, update hour and minute
-  if (minute == 60) {
-    hour++;
-    minute = 0;
-  }
-  
-  if (hour == 24) {
-    weekDay++;
-    monthDay++;
-    hour = 0;
-  }
-    
-  if (weekDay == 7) {
-    weekDay = 0;
-  }
-  
-  if (monthDay > monthDays[month]) {
-    month++;
-    monthDay = 1;
-  }
-  
-  if (month == 12) {
-    month = 0;
-  }
+	// Loop backwards through the time vals
+	// (Start with minute, then hour...)
+	for (int i = NUM_TIME_VALS - 1; i >= 0; i--) {
+		// Month days have no set max
+		if (i != MONTH_DAY) {
+			// If this time val is too high set it to 0 and increment the
+			// appropriate next val 
+			if (timeVals[i] == maxi[i]) {
+				timeVals[i] = 0;
+				
+				if (i == MINUTE) {
+					timeVals[HOUR]++;
+				} else if (i == HOUR) {
+					timeVals[WEEKDAY]++;
+					timeVals[MONTH_DAY]++;
+				}
+			}
+		} else {
+			// If the day of the month is too high, set it to 0 and increment
+			// the month
+			if (timeVals[i] > monthDays[timeVals[MONTH]]) {
+				timeVals[i] = 1;
+				
+				timeVals[MONTH]++;
+			}
+		}
+	}
 }
 
 
@@ -282,16 +322,16 @@ void checkTime() {
  */
 void setTimeString() {
   // Create string versions of hour and minute
-  String hourString = String(hour);
-  String minuteString = String(minute);
+  String hourString = String(timeVals[HOUR]);
+  String minuteString = String(timeVals[MINUTE]);
   
   // Add a "0" to the front of numbers under 10
-  if (hour < 10) {
+  if (timeVals[HOUR] < 10) {
     hourString = "0" + hourString;
   }
   
   // Add a "0" to the front of numbers under 10
-  if (minute < 10) {
+  if (timeVals[MINUTE] < 10) {
     minuteString = "0" + minuteString;
   }
   
@@ -306,6 +346,12 @@ void setTimeString() {
 void checkAndDisplay() {
   checkTime();
   setTimeString();
-  lcdWriteTop(days[weekDay] + " " + months[month] + " " + String(monthDay) + " " + timeString);
+  lcdWriteTop(days[timeVals[WEEKDAY]] + " "
+	+ months[timeVals[MONTH]] + " "
+	+ String(timeVals[MONTH_DAY]) + " "
+	+ timeString);
 }
+
+
+
 
