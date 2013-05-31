@@ -7,8 +7,8 @@
  *
  * Pins:
  *  Control	6
- *  Up		7
- *  Down	8
+ *  Down	7
+ *  UP		8
  *  Brew	9
  *  Piezo	10
  *  Relay	13
@@ -28,8 +28,8 @@
 
 // Set pins
 #define CONTROL_BUTTON 6
-#define UP_BUTTON 7
-#define DOWN_BUTTON 8
+#define DOWN_BUTTON 7
+#define UP_BUTTON 8
 #define COFFEE_BUTTON 9
 #define PIEZO 10
 #define RELAY 13
@@ -82,6 +82,7 @@ String lastBrewString = "Never";
 // Initialize brewing boolean
 boolean brewing = false;
 
+
 void setup() {
   // Start LCD
   lcd.begin(16, 2);
@@ -110,6 +111,7 @@ void setup() {
   // Relay is set to LOW by default, so stop it
   stopBrew();
 }
+
 
 void loop() {
   // Needed for timer to work
@@ -157,12 +159,12 @@ void setTime() {
 				timeVals[i]++;
 				
 				// Check value and adjust as necessary
-				if (!i == MONTH_DAY) {
-					if (timeVals[i] = maxi[i]) {
+				if (i != MONTH_DAY) {
+					if (timeVals[i] == maxi[i]) {
 						timeVals[i] = 0;
 					}
 				} else {
-					if (timeVals[i] > monthDays[i]) {
+					if (timeVals[i] > monthDays[timeVals[MONTH]]) {
 						timeVals[i] = 1;
 					}
 				}
@@ -183,13 +185,13 @@ void setTime() {
 				timeVals[i]--;
 				
 				// Check value and adjust as necessary
-				if (!i == MONTH_DAY) {
+				if (i != MONTH_DAY) {
 					if (timeVals[i] < 0) {
 						timeVals[i] = maxi[i] - 1;
 					}
 				} else {
 					if (timeVals[i] == 0) {
-						timeVals[i] = monthDays[i];
+						timeVals[i] = monthDays[timeVals[MONTH]];
 					}
 				}
 				
