@@ -58,6 +58,13 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 // A timer that allows the clock to function
 SimpleTimer timer;
 
+// Vars to make looping through time vars easier
+const String timeValNames[] = 
+	{"Month", "Month day", "Weekday", "Hour", "Minute"};
+// Month day will have to be checked separately because months are weird
+const int maxi[] = {12, 0, 7, 24, 60};
+int timeVals[] = {0, 1, 0, 0, 0};
+
 // Initialize time units
 int month = 0;
 int monthDay = 1;
