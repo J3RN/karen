@@ -39,11 +39,11 @@
 #define DEBOUNCE 250
 
 // Indexes for accessing specific time vars
-#define MONTH 1
-#define MONTH_DAY 2
-#define WEEKDAY 3
-#define HOUR 4
-#define MINUTE 5
+#define MONTH 0
+#define MONTH_DAY 1
+#define WEEKDAY 2
+#define HOUR 3
+#define MINUTE 4
 
 // Constant for number of time vals
 #define NUM_TIME_VALS 5
@@ -140,6 +140,15 @@ void setTime() {
 	for (int i = 0; i < NUM_TIME_VALS; i++) {
 		// Prompt user for this time val
 		lcdWriteTop(timeValNames[i] + "?");
+
+		// Show the user the current value
+		if (i == MONTH) {
+			lcdWriteBottom(months[timeVals[i]]);
+		} else if (i == WEEKDAY) {
+			lcdWriteBottom(days[timeVals[i]]);
+		} else {
+			lcdWriteBottom(String(timeVals[i]));
+		}
 		
 		// Write time and adjust value as requested
 		do {
@@ -157,7 +166,17 @@ void setTime() {
 						timeVals[i] = 1;
 					}
 				}
-
+				
+				// Write the appropriate value to show the user their changes
+				if (i == MONTH) {
+					lcdWriteBottom(months[timeVals[i]]);
+				} else if (i == WEEKDAY) {
+					lcdWriteBottom(days[timeVals[i]]);
+				} else {
+					lcdWriteBottom(String(timeVals[i]));
+				}				
+				
+				// Debounce the up button
 				delay(DEBOUNCE);
 			// If the down button is pressed, decrement this time val
 			} else if (digitalRead(DOWN_BUTTON)) {
@@ -173,17 +192,18 @@ void setTime() {
 						timeVals[i] = monthDays[i];
 					}
 				}
-
+				
+				// Write the appropriate value to show the user their changes
+				if (i == MONTH) {
+					lcdWriteBottom(months[timeVals[i]]);
+				} else if (i == WEEKDAY) {
+					lcdWriteBottom(days[timeVals[i]]);
+				} else {
+					lcdWriteBottom(String(timeVals[i]));
+				}
+				
+				// Debounce the down button
 				delay(DEBOUNCE);
-			}
-			
-			// Write the appropriate value to show the user their changes
-			if (i == MONTH) {
-				lcdWriteBottom(months[timeVals[i]]);
-			} else if (i == WEEKDAY) {
-				lcdWriteBottom(days[timeVals[i]]);
-			} else {
-				lcdWriteBottom(String(timeVals[i]));
 			}
 		} while(!digitalRead(CONTROL_BUTTON));
 		
