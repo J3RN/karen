@@ -102,69 +102,10 @@ void loop() {
   // Needed for timer to work
   timer.run();
   
-  // Initialize var to hold button push info
-  int buttonCode = 0;
-  
-  // Find pressed button, if any
-  if (digitalRead(DAY_BUTTON)) {
-    buttonCode = DAY;
-  } else if (digitalRead(HOUR_BUTTON)) {
-    buttonCode = HOUR;
-  } else if (digitalRead(MINUTE_BUTTON)) {
-    buttonCode = MINUTE;
+  if (digitalRead(CONTROL_BUTTON)) {
+	setTime();
   }
-  
-  // If the hour button is being pushed, increment
-  // the hour and check and display the time
-  if (buttonCode != 0) {
-    // Wait for possible second button press 
-    delay(DOUBLE_BUTTON_PAUSE);
-    
-    // Check button combos
-    switch (buttonCode) {
-      // Increment weekday, month, or day of the month based
-      // on button combination
-      case DAY:
-        if (digitalRead(MINUTE_BUTTON)) {
-          weekDay++;
-        } else if (digitalRead(HOUR_BUTTON)) {
-          month++;
-        } else {
-          monthDay++; 
-        }
-        
-        break;
-        
-      // Increment month if day is also pressed
-      // Otherwise, increment hour
-      case HOUR:
-        if (digitalRead(DAY_BUTTON)) {
-          month++;
-        } else {
-          hour++;
-        }
-        
-        break;
-        
-      // Increment weekday if day is also pressed
-      // Otherwise, increment minute
-      case MINUTE:
-        if (digitalRead(DAY_BUTTON)) {
-          weekDay++;
-        } else {
-          minute++;
-        }
-        
-        break;
-    }
-    
-    // Display new time
-    checkAndDisplay();
-    
-    // Prevent DEBOUNCE
-    delay(DEBOUNCE - DOUBLE_BUTTON_PAUSE);
-  }
-  
+
   // If the force coffee pin is pushed, toggle brew
   if (digitalRead(COFFEE_BUTTON)) {
     if (brewing) {
@@ -172,9 +113,9 @@ void loop() {
     } else {
      brew();
     }
-    
-    delay(DEBOUNCE);
   }
+
+  delay(DEBOUNCE);
 }
 
 
