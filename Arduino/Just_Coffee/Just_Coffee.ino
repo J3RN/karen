@@ -109,6 +109,7 @@ void setup() {
 	timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
 
 	// Show a start-up splash for two seconds
+	lcdWriteBottom("");		// Get rid of brew message
 	lcdWriteTop(VERSION);
 	delay(2000);
 
@@ -123,8 +124,8 @@ void loop() {
   
   // If the user presses the control button, have them set the time
   if (digitalRead(CONTROL_BUTTON)) {
-	setTime();
 	delay(DEBOUNCE);
+	setTime();
   }
 
   // If the force coffee pin is pushed, toggle brew
