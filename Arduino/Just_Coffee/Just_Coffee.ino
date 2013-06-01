@@ -1,4 +1,6 @@
 /*
+ * Karen v1.4.1
+ *
  * A script to turn on a coffee maker every morning by flipping a relay. Additionally, it displays the current 
  * time and date on an LCD screen and a piezo speaker beeps when coffee is being made.
  *
@@ -25,6 +27,9 @@
 #include <SimpleTimer.h>
 #include <LiquidCrystal.h>
 #include "pitches.h"
+
+// Define version number
+#define VERSION "Karen v1.4.1"
 
 // Set pins
 #define CONTROL_BUTTON 6
@@ -104,7 +109,7 @@ void setup() {
 	timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
 
 	// Show a start-up splash for two seconds
-	lcdWriteTop("Karen v1.4.0");
+	lcdWriteTop(VERSION);
 	delay(2000);
 
 	// Have the user set the time
@@ -119,6 +124,7 @@ void loop() {
   // If the user presses the control button, have them set the time
   if (digitalRead(CONTROL_BUTTON)) {
 	setTime();
+	delay(DEBOUNCE);
   }
 
   // If the force coffee pin is pushed, toggle brew
@@ -128,9 +134,9 @@ void loop() {
     } else {
      brew();
     }
+	
+	delay(DEBOUNCE);
   }
-
-  delay(DEBOUNCE);
 }
 
 
