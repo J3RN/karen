@@ -105,9 +105,6 @@ void setup() {
 	// Relay is set to LOW by default, so stop it
 	stopBrew();
 
-	// Update time every minute
-	timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
-
 	// Show a start-up splash for two seconds
 	lcdWriteBottom("");		// Get rid of brew message
 	lcdWriteTop(VERSION);
@@ -115,6 +112,9 @@ void setup() {
 
 	// Have the user set the time
   	setTime();
+
+	// Update time every minute
+	timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
 }
 
 
