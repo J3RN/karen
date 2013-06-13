@@ -71,7 +71,7 @@ const String startTimes[] = {"08:00", "08:00", "08:00", "08:00", "08:00",
 // Have the coffee pot turn off after a given set of time
 const bool autostop = true;
 // Time (in milliseconds) for the coffee pot to turn off
-const unsigned int autoStopLength = 360000;   // 6 minutes
+const unsigned uint32_t autoStopLength = 360000;    // 6 minutes
 // Time to stop brewing if autostop is enabled
 uint32_t autoStopTime;
 
