@@ -1,5 +1,5 @@
 /*
- * Karen v1.4.1
+ * Karen v1.4.2
  *
  * A script to turn on a coffee maker every morning by flipping a relay. Additionally, it displays the current 
  * time and date on an LCD screen and a piezo speaker beeps when coffee is being made.
@@ -29,7 +29,7 @@
 #include "pitches.h"
 
 // Define version number
-#define VERSION "Karen v1.4.1"
+#define VERSION "Karen v1.4.2"
 
 // Set pins
 #define CONTROL_BUTTON 6
@@ -68,6 +68,13 @@ const String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 const String startTimes[] = {"08:00", "08:00", "08:00", "08:00", "08:00", 
 							"08:00", "08:00"};
 
+// Have the coffee pot turn off after a given set of time
+const bool autostop = true;
+// Time (in milliseconds) for the coffee pot to turn off
+const uint32_t autoStopLength = 360000;    // 6 minutes
+// Time to stop brewing if autostop is enabled
+uint32_t autoStopTime;
+
 // Initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -88,7 +95,6 @@ String lastBrewString = "Never";
 
 // Initialize brewing boolean
 boolean brewing = false;
-
 
 void setup() {
 	// Start LCD
@@ -131,12 +137,16 @@ void loop() {
   // If the force coffee pin is pushed, toggle brew
   if (digitalRead(COFFEE_BUTTON)) {
     if (brewing) {
-     stopBrew();
+      stopBrew();
     } else {
-     brew();
+      brew();
     }
 	
 	delay(DEBOUNCE);
+  }
+  
+  if (brewing && millis() >= autoStopTime) {
+    stopBrew();
   }
 }
 
@@ -279,6 +289,10 @@ void brew() {
 	// Update the brew message and display it
 	brewString = "Brew Since " + lastBrewString;
 	checkAndDisplay();
+	
+	if (autostop) {
+	    autoStopTime = millis() + autoStopLength;
+	}
 }
 
 
