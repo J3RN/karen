@@ -9,3 +9,7 @@
 */.classpath
 */.project
 
+# Make files
+*/Makefile
+*/.lib
+*/.dep
