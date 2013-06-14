@@ -1,15 +1,13 @@
 # Spyder IDE files
-*/.spyderproject
 .spyderproject
-*/.spyderworkspace
 .spyderworkspace
 
 # Eclipse files
-*/.settings
-*/.classpath
-*/.project
+.settings
+.classpath
+.project
 
 # Make files
-*/Makefile
-*/.lib
-*/.dep
+Makefile
+.lib/
+.dep/
