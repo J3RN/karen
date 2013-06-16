@@ -280,9 +280,6 @@ void brew() {
 	// Turn the relay on, turning the coffee maker on
 	digitalWrite(RELAY, LOW);
 
-	// Sound a tone signalling brewing
-	tone(PIEZO, NOTE_B5, 500);
-
 	// Set lastBrewString to the current timeString
 	lastBrewString = timeString;
 
