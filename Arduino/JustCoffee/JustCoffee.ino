@@ -1,8 +1,9 @@
 /*
  * Karen v1.4.2
  *
- * A script to turn on a coffee maker every morning by flipping a relay. Additionally, it displays the current 
- * time and date on an LCD screen and a piezo speaker beeps when coffee is being made.
+ * A script to turn on a coffee maker every morning by flipping a relay. 
+ * Additionally, it displays the current time and date on an LCD screen and a 
+ * piezo speaker beeps when it is assumed that the coffee is finished.
  *
  * Author: Jonathan Arnett
  * Modified: 05/31/2013
@@ -145,6 +146,8 @@ void loop() {
 	delay(DEBOUNCE);
   }
   
+  // If the user has enabled autostop and it is autostop time, stop brewing and 
+  // beep
   if (brewing && millis() >= autoStopTime) {
     stopBrew();
     tone(PIEZO, NOTE_B5, 1000);
