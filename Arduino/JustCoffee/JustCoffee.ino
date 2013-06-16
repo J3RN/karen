@@ -150,7 +150,7 @@ void loop() {
   // beep
   if (brewing && millis() >= autoStopTime) {
     stopBrew();
-    tone(PIEZO, NOTE_B5, 1000);
+    tone(PIEZO, NOTE_A4, 1000);
   }
 }
 
