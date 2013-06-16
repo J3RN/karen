@@ -6,7 +6,7 @@
  * piezo speaker beeps when it is assumed that the coffee is finished.
  *
  * Author: Jonathan Arnett
- * Modified: 05/31/2013
+ * Modified: 06/16/2013
  *
  * Pins:
  *  Control	6
