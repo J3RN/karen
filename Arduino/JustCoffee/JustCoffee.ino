@@ -1,5 +1,5 @@
 /*
- * Karen v1.4.2
+ * Karen v1.4.3
  *
  * A script to turn on a coffee maker every morning by flipping a relay. 
  * Additionally, it displays the current time and date on an LCD screen and a 
@@ -30,7 +30,7 @@
 #include "pitches.h"
 
 // Define version number
-#define VERSION "Karen v1.4.2"
+#define VERSION "Karen v1.4.3"
 
 // Set pins
 #define CONTROL_BUTTON 6
