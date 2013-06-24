@@ -30,7 +30,7 @@
 #include "pitches.h"
 
 // Define version number
-#define VERSION "Karen v1.4.3"
+#define VERSION "Karen v1.4.4"
 
 // Set pins
 #define CONTROL_BUTTON 6
@@ -43,12 +43,12 @@
 // Delays for button pushing
 #define DEBOUNCE 250
 
-// Indexes for accessing specific time vars
-#define MONTH 0
-#define MONTH_DAY 1
-#define WEEKDAY 2
-#define HOUR 3
-#define MINUTE 4
+// Indicies for accessing specific time vars
+#define YEAR 		0
+#define MONTH 		1
+#define MONTH_DAY 	2
+#define HOUR 		3
+#define MINUTE 		4
 
 // Constant for number of time vals
 #define NUM_TIME_VALS 5
@@ -56,21 +56,39 @@
 // String used to clear a line of the LCD
 const String clearString = "                ";
 
-const String startTimes[] = {"08:00", "08:00", "08:00", "08:00", "08:00", 
- "08:00", "08:00"};
+// 7:00 every morning
+const uint8_t startHours[7] = {7, 7, 7, 7, 7, 7, 7};
+const uint8_t startMinutes[7] = {0, 0, 0, 0, 0, 0, 0};
 
 // Have the coffee pot turn off after a given set of time
 const bool autostop = true;
+
 // Time (in milliseconds) for the coffee pot to turn off
 const uint32_t autoStopLength = 360000;    // 6 minutes
+
 // Time to stop brewing if autostop is enabled
 uint32_t autoStopTime;
+
+// Display update interval
+uint16_t updateInterval = 30000;	// 30 seconds
+
+// Next time for display to be updated
+uint32_t updateTime = 0;
 
 // Initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
+// Vars to make looping through time vars easier
+const String timeValNames[5] = {"Year", "Month", "Month day", "Hour", 
+ "Minute"};
+
+// Month days have special maxi and the year has no maximum
+const int maxi[5] = {0, 12, 0, 24, 60};
+
+// Default - Midnight on Jan 1st, 2013
+int timeVals[5] = {2013, 1, 1, 0, 0};
+
 // Initialize time strings
-String timeString = "";
 String brewString = "";
 String lastBrewString = "Never";
 
@@ -99,109 +117,50 @@ void setup() {
 
 	// Have the user set the time
   	setClockTime();
-
-	// Update time every minute
-	timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
 }
-
 
 void loop() {
-  // Needed for timer to work
-  timer.run();
-  
-  // If the user presses the control button, have them set the time
-  if (digitalRead(CONTROL_BUTTON)) {
-	delay(DEBOUNCE);
-	setTime();
-  }
+	// If the user presses the control button, have them set the time
+	if (digitalRead(CONTROL_BUTTON)) {
+		delay(DEBOUNCE);
+		setClockTime();
+	}
 
-  // If the force coffee pin is pushed, toggle brew
-  if (digitalRead(COFFEE_BUTTON)) {
-    if (brewing) {
-      stopBrew();
-    } else {
-      brew();
-    }
-	
-	delay(DEBOUNCE);
-  }
-  
-  // If the user has enabled autostop and it is autostop time, stop brewing and 
-  // beep
-  if (brewing && millis() >= autoStopTime) {
-    stopBrew();
-    tone(PIEZO, NOTE_A4, 1000);
-  }
+	// If the force coffee pin is pushed, toggle brew
+	if (digitalRead(COFFEE_BUTTON)) {
+		if (brewing) {
+		  stopBrew();
+		} else {
+		  brew();
+		}
+
+		delay(DEBOUNCE);
+	}
+
+	// If the user has enabled autostop and it is autostop time, stop brewing 
+	// and beep
+	if (brewing && millis() >= autoStopTime) {
+		stopBrew();
+		tone(PIEZO, NOTE_A4, 1000);
+	}
+
+	if (millis() >= updateTime) {
+		display();
+		updateTime = millis() + updateInterval;
+	}
 }
-
 
 /*
  * Has the user set all the time values
  */
 void setClockTime() {
-	uint8_t month = 1;
-	lcdWriteTop("Month?");
-	lcdWriteBottom(monthShortStr(month));
-	while (!digitalRead(CONTROL_BUTTON)) {
-		if (digitalRead(UP_BUTTON)) {
-			month++;
-
-			if (month == 13) {
-				month = 1;
-			}
-
-			delay(DEBOUNCE);
-		}
-
-		if (digitalRead(DOWN_BUTTON)) {
-			month--;
-
-			if (month == 0) {
-				month = 12;
-			}
-
-			delay(DEBOUNCE);
-		}
-	}
-
-	delay(DEBOUNCE);
-
-	uint8_t day = 1;
-	lcdWriteTop("Day?");
-	lcdWriteBottom(String(day));
-	while(!digitalRead(CONTROL_BUTTON)) {
-		if (digitalRead(UP_BUTTON)) {
-			day++;
-
-			if (day > monthDays[month]) {
-				day = 1;
-			}
-
-			delay(DEBOUNCE);
-		}
-
-		if (digitalRead(DOWN_BUTTON)) {
-			day--;
-
-			if (day = 0) {
-				day = monthDays[month];
-			}
-
-			delay(DEBOUNCE);
-		}
-	}
-
-	delay(DEBOUNCE);
-
 	for (int i = 0; i < NUM_TIME_VALS; i++) {
 		// Prompt user for this time val
 		lcdWriteTop(timeValNames[i] + "?");
 
 		// Show the user the current value
 		if (i == MONTH) {
-			lcdWriteBottom(months[timeVals[i]]);
-		} else if (i == WEEKDAY) {
-			lcdWriteBottom(days[timeVals[i]]);
+			lcdWriteBottom(monthShortStr(timeVals[i]));
 		} else {
 			lcdWriteBottom(String(timeVals[i]));
 		}
@@ -213,21 +172,23 @@ void setClockTime() {
 				timeVals[i]++;
 				
 				// Check value and adjust as necessary
-				if (i != MONTH_DAY) {
+				if (i == HOUR || i == MINUTE) {
 					if (timeVals[i] == maxi[i]) {
 						timeVals[i] = 0;
 					}
-				} else {
-					if (timeVals[i] > monthDays[timeVals[MONTH]]) {
+				} else if (i == MONTH) {
+					if (timeVals[i] > maxi[i]) {
+						timeVals[i] = 1;
+					}
+				} else if (i == MONTH_DAY) {
+					if (timeVals[i] > monthDays[timeVals[MONTH] - 1]) {
 						timeVals[i] = 1;
 					}
 				}
 				
 				// Write the appropriate value to show the user their changes
 				if (i == MONTH) {
-					lcdWriteBottom(months[timeVals[i]]);
-				} else if (i == WEEKDAY) {
-					lcdWriteBottom(days[timeVals[i]]);
+					lcdWriteBottom(monthShortStr(timeVals[i]));
 				} else {
 					lcdWriteBottom(String(timeVals[i]));
 				}				
@@ -239,21 +200,28 @@ void setClockTime() {
 				timeVals[i]--;
 				
 				// Check value and adjust as necessary
-				if (i != MONTH_DAY) {
+				if (i == HOUR || i == MINUTE) {
 					if (timeVals[i] < 0) {
 						timeVals[i] = maxi[i] - 1;
 					}
-				} else {
+				} else if (i == MONTH) {
 					if (timeVals[i] == 0) {
-						timeVals[i] = monthDays[timeVals[MONTH]];
+						timeVals[i] = maxi[i];
+					}
+				} else if (i == MONTH_DAY) {
+					if (timeVals[i] == 0) {
+						timeVals[i] = monthDays[timeVals[MONTH] - 1];
+					}
+				} else if (i == YEAR) {
+					// Maintain 0
+					if (timeVals[i] == 0) {
+						timeVals[i]++;
 					}
 				}
 				
 				// Write the appropriate value to show the user their changes
 				if (i == MONTH) {
-					lcdWriteBottom(months[timeVals[i]]);
-				} else if (i == WEEKDAY) {
-					lcdWriteBottom(days[timeVals[i]]);
+					lcdWriteBottom(monthShortStr(timeVals[i]));
 				} else {
 					lcdWriteBottom(String(timeVals[i]));
 				}
@@ -267,8 +235,11 @@ void setClockTime() {
 		delay(DEBOUNCE);
 	}
 
-	// Have this function check and display
-	checkAndDisplay();
+	setTime(timeVals[HOUR], timeVals[MINUTE], 0, timeVals[MONTH_DAY], 
+		timeVals[MONTH], timeVals[YEAR]);
+
+	// Go to normal display
+	display();
 }
 
 /*
@@ -296,17 +267,16 @@ void lcdWriteBottom(String text) {
 	lcd.print(text);
 }
 
-
 /**
  * Check if coffee should be made based on the current time
  */
 void checkMakeCoffee() {
-  // If the time matches for today, make coffee
-  if (timeString == startTimes[timeVals[WEEKDAY]]) {
-    brew();
-  }
+	// If the time matches for today, make coffee
+	uint8_t today = weekday();
+	if (hour() == startHours[today] && minute() == startMinutes[today]) {
+		brew();
+	}
 }
-
 
 /**
  * Starts making coffee and displays a message
@@ -319,17 +289,16 @@ void brew() {
 	digitalWrite(RELAY, LOW);
 
 	// Set lastBrewString to the current timeString
-	lastBrewString = timeString;
+	lastBrewString = makeTimeString();
 
 	// Update the brew message and display it
 	brewString = "Brew Since " + lastBrewString;
-	checkAndDisplay();
+	display();
 	
 	if (autostop) {
 	    autoStopTime = millis() + autoStopLength;
 	}
 }
-
 
 /*
  * Turn off the coffee maker, update appropriate variables, and display that
@@ -344,97 +313,40 @@ void stopBrew() {
 
 	// Update the brew message and display it
 	brewString = "Last Brew: " + lastBrewString;
-  	checkAndDisplay();
+  	display();
 }
 
+String makeTimeString() {
+	String hourString, minString;
+	uint16_t curHour = hour(), curMin = minute();
 
-/**
- * Update the time and display it
- */
-void updateTime() {
-  // Update minute
-  timeVals[MINUTE]++;
-  
-  // Check and display the time
-  checkAndDisplay();
-  
-  // Check if coffee should be made
-  checkMakeCoffee();
-}
-
-
-/**
- * Check if any time values need to be changed
- */
-void checkTime() {
-	// Loop backwards through the time vals
-	// (Start with minute, then hour...)
-	for (int i = NUM_TIME_VALS - 1; i >= 0; i--) {
-		// Month days have no set max
-		if (i != MONTH_DAY) {
-			// If this time val is too high set it to 0 and increment the
-			// appropriate next val 
-			if (timeVals[i] == maxi[i]) {
-				timeVals[i] = 0;
-				
-				if (i == MINUTE) {
-					timeVals[HOUR]++;
-				} else if (i == HOUR) {
-					timeVals[WEEKDAY]++;
-					timeVals[MONTH_DAY]++;
-				}
-			}
-		} else {
-			// If the day of the month is too high, set it to 0 and increment
-			// the month
-			if (timeVals[i] > monthDays[timeVals[MONTH]]) {
-				timeVals[i] = 1;
-				
-				timeVals[MONTH]++;
-			}
-		}
+	if (curHour < 10) {
+		hourString = "0" + String(curHour);
+	} else {
+		hourString = String(curHour);
 	}
+
+	if (curMin < 10) {
+		minString = "0" + String(minString);
+	} else {
+		minString = String(minString);
+	}
+
+	return hourString + ":" + minString;
 }
-
-
-/*
- * Updates timeString to signify the surrent time
- */
-void setTimeString() {
-  // Create string versions of hour and minute
-  String hourString = String(timeVals[HOUR]);
-  String minuteString = String(timeVals[MINUTE]);
-  
-  // Add a "0" to the front of numbers under 10
-  if (timeVals[HOUR] < 10) {
-    hourString = "0" + hourString;
-  }
-  
-  // Add a "0" to the front of numbers under 10
-  if (timeVals[MINUTE] < 10) {
-    minuteString = "0" + minuteString;
-  }
-  
-  // Update timeString
-  timeString = hourString + ":" + minuteString;
-}
-
 
 /**
  * Check time values, set the time string, and display the time
  */
-void checkAndDisplay() {
-	checkTime();
-	setTimeString();
+void display() {
 	
-	lcdWriteTop(days[timeVals[WEEKDAY]] + " " 
-	+ months[timeVals[MONTH]] + " " 
-	+ String(timeVals[MONTH_DAY]) + " " 
-	+ timeString);
+
+	lcdWriteTop(
+	 String(dayShortStr(weekday())) + " " +
+	 String(monthShortStr(month())) + " " +
+	 String(day()) + " " +
+	 makeTimeString()
+	 );
 	
 	lcdWriteBottom(brewString);
 }
-
-
-
-
