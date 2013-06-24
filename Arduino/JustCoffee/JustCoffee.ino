@@ -6,7 +6,7 @@
  * piezo speaker beeps when it is assumed that the coffee is finished.
  *
  * Author: Jonathan Arnett
- * Modified: 06/16/2013
+ * Modified: 06/24/2013
  *
  * Pins:
  *  Control	6
@@ -25,7 +25,7 @@
  * For LCD V0, 2,200 ohms works for me (r-r-r).
  */
 
-#include <SimpleTimer.h>
+#include <Time.h>
 #include <LiquidCrystal.h>
 #include "pitches.h"
 
@@ -56,18 +56,8 @@
 // String used to clear a line of the LCD
 const String clearString = "                ";
 
-// Initialize array of month names
-const String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
-						"Sep", "Oct", "Nov", "Dec"};
-
-// Initialize array for days in each month
-const int monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-// Initialize days to an array of days of the week
-const String days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-
 const String startTimes[] = {"08:00", "08:00", "08:00", "08:00", "08:00", 
-							"08:00", "08:00"};
+ "08:00", "08:00"};
 
 // Have the coffee pot turn off after a given set of time
 const bool autostop = true;
@@ -78,16 +68,6 @@ uint32_t autoStopTime;
 
 // Initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
-
-// A timer that allows the clock to function
-SimpleTimer timer;
-
-// Vars to make looping through time vars easier
-const String timeValNames[] = 
-	{"Month", "Month day", "Weekday", "Hour", "Minute"};
-// Month day will have to be checked separately because months are weird
-const int maxi[] = {12, 0, 7, 24, 60};
-int timeVals[] = {0, 1, 0, 0, 0};
 
 // Initialize time strings
 String timeString = "";
@@ -118,7 +98,7 @@ void setup() {
 	delay(2000);
 
 	// Have the user set the time
-  	setTime();
+  	setClockTime();
 
 	// Update time every minute
 	timer.setInterval(60000, updateTime);  // 60,000 milliseconds per minute
@@ -158,7 +138,61 @@ void loop() {
 /*
  * Has the user set all the time values
  */
-void setTime() {
+void setClockTime() {
+	uint8_t month = 1;
+	lcdWriteTop("Month?");
+	lcdWriteBottom(monthShortStr(month));
+	while (!digitalRead(CONTROL_BUTTON)) {
+		if (digitalRead(UP_BUTTON)) {
+			month++;
+
+			if (month == 13) {
+				month = 1;
+			}
+
+			delay(DEBOUNCE);
+		}
+
+		if (digitalRead(DOWN_BUTTON)) {
+			month--;
+
+			if (month == 0) {
+				month = 12;
+			}
+
+			delay(DEBOUNCE);
+		}
+	}
+
+	delay(DEBOUNCE);
+
+	uint8_t day = 1;
+	lcdWriteTop("Day?");
+	lcdWriteBottom(String(day));
+	while(!digitalRead(CONTROL_BUTTON)) {
+		if (digitalRead(UP_BUTTON)) {
+			day++;
+
+			if (day > monthDays[month]) {
+				day = 1;
+			}
+
+			delay(DEBOUNCE);
+		}
+
+		if (digitalRead(DOWN_BUTTON)) {
+			day--;
+
+			if (day = 0) {
+				day = monthDays[month];
+			}
+
+			delay(DEBOUNCE);
+		}
+	}
+
+	delay(DEBOUNCE);
+
 	for (int i = 0; i < NUM_TIME_VALS; i++) {
 		// Prompt user for this time val
 		lcdWriteTop(timeValNames[i] + "?");
