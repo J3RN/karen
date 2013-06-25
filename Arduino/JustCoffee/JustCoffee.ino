@@ -144,8 +144,11 @@ void loop() {
 		tone(PIEZO, NOTE_A4, 1000);
 	}
 
+	// If it's time to update, display the new time and check to see if it's
+	// coffee time
 	if (millis() >= updateTime) {
 		display();
+		checkMakeCoffee();
 		updateTime = millis() + updateInterval;
 	}
 }
@@ -339,8 +342,6 @@ String makeTimeString() {
  * Check time values, set the time string, and display the time
  */
 void display() {
-	
-
 	lcdWriteTop(
 	 String(dayShortStr(weekday())) + " " +
 	 String(monthShortStr(month())) + " " +
