@@ -327,9 +327,9 @@ String makeTimeString() {
 	}
 
 	if (curMin < 10) {
-		minString = "0" + String(minString);
+		minString = "0" + String(curMin);
 	} else {
-		minString = String(minString);
+		minString = String(curMin);
 	}
 
 	return hourString + ":" + minString;
