@@ -30,28 +30,32 @@
 #include "pitches.h"
 
 // Define version number
-#define VERSION "Karen v1.5.0"
+#define VERSION 			"Karen v1.5.0"
 
 // Set pins
-#define CONTROL_BUTTON 6
-#define DOWN_BUTTON 7
-#define UP_BUTTON 8
-#define COFFEE_BUTTON 9
-#define PIEZO 10
-#define RELAY 13
+#define CONTROL_BUTTON		6
+#define DOWN_BUTTON 		7
+#define UP_BUTTON 			8
+#define COFFEE_BUTTON 		9	
+#define PIEZO 				10
+#define RELAY 				13
 
 // Delays for button pushing
-#define DEBOUNCE 250
+#define DEBOUNCE 			250
 
 // Indicies for accessing specific time vars
-#define YEAR 		0
-#define MONTH 		1
-#define MONTH_DAY 	2
-#define HOUR 		3
-#define MINUTE 		4
+#define YEAR 				0
+#define MONTH 				1
+#define MONTH_DAY 			2
+#define HOUR 				3
+#define MINUTE 				4
 
 // Constant for number of time vals
-#define NUM_TIME_VALS 5
+#define NUM_TIME_VALS 		5
+
+// Indicies for the daily brew time
+#define DB_HOUR 			0
+#define DB_MIN  			1
 
 // String used to clear a line of the LCD
 const String clearString = "                ";
@@ -60,7 +64,7 @@ const String clearString = "                ";
 bool dailyBrew = false;
 
 // Set default for daily brew as midnight
-uint8_t startHour = 0, startMinute = 0;
+uint8_t startTime[2] = {0, 0};
 
 // Have the coffee pot turn off after a given set of time
 const bool autostop = true;
@@ -72,7 +76,7 @@ const uint32_t autoStopLength = 360000;    // 6 minutes
 uint32_t autoStopTime;
 
 // Display update interval
-uint16_t updateInterval = 30000;	// 30 seconds
+const uint16_t updateInterval = 30000;	// 30 seconds
 
 // Next time for display to be updated
 uint32_t updateTime = 0;
@@ -125,7 +129,7 @@ void loop() {
 	// If the user presses the control button, have them set the time
 	if (digitalRead(CONTROL_BUTTON)) {
 		delay(DEBOUNCE);
-		setClockTime();
+		showMenu();
 	}
 
 	// If the force coffee pin is pushed, toggle brew
@@ -154,6 +158,108 @@ void loop() {
 			checkMakeCoffee();
 		}
 		updateTime = millis() + updateInterval;
+	}
+}
+
+void showMenu() {
+	uint8_t index = 0;
+	const uint8_t numMenus = 2; 
+	String messages[numMenus] = {"Set Time", "Set Daily Brew"};
+	
+	lcdWriteTop(messages[index]);
+	lcdWriteBottom(clearString);
+	while (!digitalRead(CONTROL_BUTTON)) {
+		if (digitalRead(UP_BUTTON)) {
+			if (index + 1 == numMenus) {
+				index = 0;
+			} else {
+				index++;
+			}
+			lcdWriteTop(messages[index]);
+			delay(DEBOUNCE);
+		}
+
+		if (digitalRead(DOWN_BUTTON)) {
+			if (index == 0) {
+				index = numMenus - 1;
+			} else {
+				index --;
+			}
+
+			lcdWriteTop(messages[index]);
+			delay(DEBOUNCE);
+		}
+	}
+
+	delay(DEBOUNCE);
+
+	switch (index) {
+		case 0:
+			setClockTime();
+			break;
+
+		case 1:
+			setDailyBrew();
+			break;
+	}
+
+	// Go back to clock display
+	display();
+}
+
+/*
+ * Has the user enabled/disable the daily brew, and set the time if it is wanted
+ */
+void setDailyBrew() {
+	lcdWriteTop("Brew daily?");
+	dailyBrew ? lcdWriteBottom("Yes") : lcdWriteBottom("No");
+	while (!digitalRead(CONTROL_BUTTON)) {
+		if (digitalRead(UP_BUTTON) || digitalRead(DOWN_BUTTON)) {
+			dailyBrew = !dailyBrew;
+			dailyBrew ? lcdWriteBottom("Yes") : lcdWriteBottom("No");
+			delay(DEBOUNCE);
+		}
+	}
+
+	// Debounce Control
+	delay(DEBOUNCE);
+
+	if (dailyBrew) {
+		uint8_t myTimeRefs[2] = {HOUR, MINUTE};
+
+		lcdWriteTop("Daily Brew Time?");
+		lcdWriteBottom(makeTimeString(startTime[DB_HOUR], 
+			startTime[DB_MIN]));
+
+		for (int i = 0; i < 2; i++) {
+			while (!digitalRead(CONTROL_BUTTON)) {
+				if (digitalRead(UP_BUTTON)) {
+					if ((startTime[i] + 1) == maxi[myTimeRefs[i]]) {
+						startTime[i] = 0;
+					} else {
+						startTime[i]++;
+					}
+
+					lcdWriteBottom(makeTimeString(startTime[DB_HOUR], 
+						startTime[DB_MIN]));
+					delay(DEBOUNCE);
+				}
+
+				if (digitalRead(DOWN_BUTTON)) {
+					if (startTime[i] == 0) {
+						startTime[i] = maxi[myTimeRefs[i]] - 1;
+					} else {
+						startTime[i]--;
+					}
+
+					lcdWriteBottom(makeTimeString(startTime[DB_HOUR], 
+						startTime[DB_MIN]));
+					delay(DEBOUNCE);
+				}
+			}
+
+			delay(DEBOUNCE);
+		}
 	}
 }
 
@@ -244,9 +350,6 @@ void setClockTime() {
 
 	setTime(timeVals[HOUR], timeVals[MINUTE], 0, timeVals[MONTH_DAY], 
 		timeVals[MONTH], timeVals[YEAR]);
-
-	// Go to normal display
-	display();
 }
 
 /*
@@ -279,8 +382,7 @@ void lcdWriteBottom(String text) {
  */
 void checkMakeCoffee() {
 	// If the time matches for today, make coffee
-	uint8_t today = weekday();
-	if (hour() == startHour && minute() == startMinute) {
+	if (hour() == startTime[DB_HOUR] && minute() == startTime[DB_MIN]) {
 		brew();
 	}
 }
