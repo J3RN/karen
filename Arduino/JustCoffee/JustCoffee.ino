@@ -56,9 +56,11 @@
 // String used to clear a line of the LCD
 const String clearString = "                ";
 
-// 7:00 every morning
-const uint8_t startHours[7] = {7, 7, 7, 7, 7, 7, 7};
-const uint8_t startMinutes[7] = {0, 0, 0, 0, 0, 0, 0};
+// Boolean for whether the daily brew is enabled; false by default
+bool dailyBrew = false;
+
+// Set default for daily brew as midnight
+uint8_t startHour = 0, startMinute = 0;
 
 // Have the coffee pot turn off after a given set of time
 const bool autostop = true;
@@ -148,7 +150,9 @@ void loop() {
 	// coffee time
 	if (millis() >= updateTime) {
 		display();
-		checkMakeCoffee();
+		if (dailyBrew) {
+			checkMakeCoffee();
+		}
 		updateTime = millis() + updateInterval;
 	}
 }
@@ -276,7 +280,7 @@ void lcdWriteBottom(String text) {
 void checkMakeCoffee() {
 	// If the time matches for today, make coffee
 	uint8_t today = weekday();
-	if (hour() == startHours[today] && minute() == startMinutes[today]) {
+	if (hour() == startHour && minute() == startMinute) {
 		brew();
 	}
 }
@@ -320,19 +324,22 @@ void stopBrew() {
 }
 
 String makeTimeString() {
-	String hourString, minString;
-	uint16_t curHour = hour(), curMin = minute();
+	return makeTimeString(hour(), minute());
+}
 
-	if (curHour < 10) {
-		hourString = "0" + String(curHour);
+String makeTimeString(uint8_t myHour, uint8_t myMin) {
+	String hourString, minString;
+
+	if (myHour < 10) {
+		hourString = "0" + String(myHour);
 	} else {
-		hourString = String(curHour);
+		hourString = String(myHour);
 	}
 
-	if (curMin < 10) {
-		minString = "0" + String(curMin);
+	if (myMin < 10) {
+		minString = "0" + String(myMin);
 	} else {
-		minString = String(curMin);
+		minString = String(myMin);
 	}
 
 	return hourString + ":" + minString;
