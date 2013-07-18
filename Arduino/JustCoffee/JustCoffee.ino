@@ -30,7 +30,7 @@
 #include "pitches.h"
 
 // Define version number
-#define VERSION 			"Karen v1.5.0"
+#define VERSION 			"Karen v1.6"
 
 // Set pins
 #define CONTROL_BUTTON		6
@@ -163,8 +163,8 @@ void loop() {
 
 void showMenu() {
 	uint8_t index = 0;
-	const uint8_t numMenus = 2; 
-	String messages[numMenus] = {"Set Time", "Set Daily Brew"};
+	const uint8_t numMenus = 3; 
+	String messages[numMenus] = {"Set Time", "Set Daily Brew", "Back"};
 	
 	lcdWriteTop(messages[index]);
 	lcdWriteBottom(clearString);
