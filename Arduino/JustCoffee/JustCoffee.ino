@@ -84,15 +84,11 @@ uint32_t updateTime = 0;
 // Initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-// Vars to make looping through time vars easier
-const String timeValNames[5] = {"Year", "Month", "Month day", "Hour", 
- "Minute"};
-
 // Month days have special maxi and the year has no maximum
 const int maxi[5] = {0, 12, 0, 24, 60};
 
-// Default - Midnight on Jan 1st, 2013
-int timeVals[5] = {2013, 1, 1, 0, 0};
+// Boolean for whether time has been intialized
+boolean timeInit = false;
 
 // Initialize time strings
 String brewString = "";
@@ -267,6 +263,29 @@ void setDailyBrew() {
  * Has the user set all the time values
  */
 void setClockTime() {
+	// Vars to make looping through time vars easier
+	const String timeValNames[5] = {"Year", "Month", "Month day", "Hour", 
+	 "Minute"};
+	int timeVals[5];
+
+	if (timeInit) {
+		// Get time from library
+		timeVals[0] = year();
+		timeVals[1] = month();
+		timeVals[2] = day();
+		timeVals[3] = hour();
+		timeVals[4] = minute();
+	} else {
+		// Default - Midnight on Jan 1st, 2013
+		timeVals[0] = 2013;
+		timeVals[1] = 1;
+		timeVals[2] = 1;
+		timeVals[3] = 0;
+		timeVals[4] = 0;
+
+		timeInit = true;
+	}
+
 	for (int i = 0; i < NUM_TIME_VALS; i++) {
 		// Prompt user for this time val
 		lcdWriteTop(timeValNames[i] + "?");
@@ -342,7 +361,7 @@ void setClockTime() {
 				// Debounce the down button
 				delay(DEBOUNCE);
 			}
-		} while(!digitalRead(CONTROL_BUTTON));
+		} while (!digitalRead(CONTROL_BUTTON));
 		
 		// Debounce the control button
 		delay(DEBOUNCE);
