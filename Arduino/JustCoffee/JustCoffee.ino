@@ -60,25 +60,25 @@
 // String used to clear a line of the LCD
 const String clearString = "                ";
 
-// Boolean for whether the daily brew is enabled; false by default
+// Defaults:
+// No daily brew
+// Autostop
+// Not brewing
+// Time has not been initialized
 bool dailyBrew = false;
+bool autostop = true;
+bool brewing = false;
+bool timeInit = false;
 
 // Set default for daily brew as midnight
 uint8_t startTime[2] = {0, 0};
 
-// Have the coffee pot turn off after a given set of time
-const bool autostop = true;
-
-// Time (in milliseconds) for the coffee pot to turn off
-const uint32_t autoStopLength = 360000;    // 6 minutes
-
-// Time to stop brewing if autostop is enabled
+// Autostop vars
+uint8_t autoStopLength = 6;    // 6 minutes
 uint32_t autoStopTime;
 
-// Display update interval
-const uint16_t updateInterval = 30000;	// 30 seconds
-
-// Next time for display to be updated
+// Update vars
+const uint8_t updateInterval = 30;	// 30 seconds
 uint32_t updateTime = 0;
 
 // Initialize the library with the numbers of the interface pins
@@ -87,15 +87,10 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 // Month days have special maxi and the year has no maximum
 const int maxi[5] = {0, 12, 0, 24, 60};
 
-// Boolean for whether time has been intialized
-boolean timeInit = false;
-
 // Initialize time strings
 String brewString = "";
 String lastBrewString = "Never";
 
-// Initialize brewing boolean
-boolean brewing = false;
 
 void setup() {
 	// Start LCD
@@ -153,7 +148,7 @@ void loop() {
 		if (dailyBrew) {
 			checkMakeCoffee();
 		}
-		updateTime = millis() + updateInterval;
+		updateTime = millis() + (updateInterval * 1000);
 	}
 }
 
@@ -424,7 +419,7 @@ void brew() {
 	display();
 	
 	if (autostop) {
-	    autoStopTime = millis() + autoStopLength;
+	    autoStopTime = millis() + (autoStopLength * 60 * 1000);
 	}
 }
 
