@@ -1,5 +1,5 @@
 /*
- * Karen v1.5.0
+ * Karen v1.6
  *
  * A script to turn on a coffee maker every morning by flipping a relay. 
  * Additionally, it displays the current time and date on an LCD screen and a 
