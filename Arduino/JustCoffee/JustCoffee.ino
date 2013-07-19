@@ -154,8 +154,9 @@ void loop() {
 
 void showMenu() {
 	uint8_t index = 0;
-	const uint8_t numMenus = 3; 
-	String messages[numMenus] = {"Set Time", "Set Daily Brew", "Back"};
+	const uint8_t numMenus = 4; 
+	String messages[numMenus] = {"Set Time", "Set Daily Brew", "Set Auto Stop", 
+		"Back"};
 	
 	lcdWriteTop(messages[index]);
 	lcdWriteBottom(clearString);
@@ -191,6 +192,9 @@ void showMenu() {
 
 		case 1:
 			setDailyBrew();
+			break;
+		case 2:
+			setAutoStop();
 			break;
 	}
 
@@ -364,6 +368,44 @@ void setClockTime() {
 
 	setTime(timeVals[HOUR], timeVals[MINUTE], 0, timeVals[MONTH_DAY], 
 		timeVals[MONTH], timeVals[YEAR]);
+}
+
+/*
+ * Show an interface for the user to configure the autostop feature
+ */
+void setAutoStop() {
+	lcdWriteTop("Enable Autostop?");
+	lcdWriteBottom(autostop ? "Yes" : "No");
+
+	while (!digitalRead(CONTROL_BUTTON)) {
+		if (digitalRead(UP_BUTTON) || digitalRead(DOWN_BUTTON)) {
+			autostop = !autostop;
+			lcdWriteBottom(autostop ? "Yes" : "No");
+			delay(DEBOUNCE);
+		}
+	}
+	delay(DEBOUNCE);
+
+	if (autostop) {
+		lcdWriteTop("Autostop time");
+		lcdWriteBottom(String(autoStopLength) + " min");
+
+		while (!digitalRead(CONTROL_BUTTON)) {
+			if (digitalRead(UP_BUTTON)) {
+				autoStopLength++;
+				lcdWriteBottom(String(autoStopLength) + " min");
+				delay(DEBOUNCE);
+			} 
+			if(digitalRead(DOWN_BUTTON)) {
+				if (!autoStopLength == 0) {
+					autoStopLength--;
+				}
+				lcdWriteBottom(String(autoStopLength) + " min");
+				delay(DEBOUNCE);
+			}
+		}
+		delay(DEBOUNCE);
+	}
 }
 
 /*
