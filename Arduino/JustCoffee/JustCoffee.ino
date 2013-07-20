@@ -500,7 +500,7 @@ String makeTimeString() {
  * Creates a string representing the time given
  */
 String makeTimeString(uint8_t myHour, uint8_t myMinute) {
-	return makeTimeVersion(myHour) + ":" + makeTimeString(myMinute);
+	return makeTimeVersion(myHour) + ":" + makeTimeVersion(myMinute);
 }
 
 /*
