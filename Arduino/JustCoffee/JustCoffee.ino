@@ -92,6 +92,9 @@ String brewString = "";
 String lastBrewString = "Never";
 
 
+/*
+ * Get everything ready
+ */
 void setup() {
 	// Start LCD
 	lcd.begin(16, 2);
@@ -116,6 +119,9 @@ void setup() {
   	setClockTime();
 }
 
+/*
+ * Continuously check to display the menu, brew coffee, or update the display
+ */
 void loop() {
 	// If the user presses the control button, have them set the time
 	if (digitalRead(CONTROL_BUTTON)) {
@@ -152,6 +158,9 @@ void loop() {
 	}
 }
 
+/*
+ * Show the menu where you can choose what to change (or exit)
+ */
 void showMenu() {
 	uint8_t index = 0;
 	const uint8_t numMenus = 4; 
@@ -420,7 +429,6 @@ void lcdWriteTop(String text) {
 	lcd.print(text);
 }
 
-
 /*
  * Write the given text across the bottom line of the LCD
  */
@@ -481,10 +489,16 @@ void stopBrew() {
   	display();
 }
 
+/*
+ * Creates a string for the current time
+ */
 String makeTimeString() {
 	return makeTimeString(hour(), minute());
 }
 
+/*
+ * Creates a string representing the time given
+ */
 String makeTimeString(uint8_t myHour, uint8_t myMin) {
 	String hourString, minString;
 
