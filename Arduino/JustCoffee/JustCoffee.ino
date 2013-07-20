@@ -232,10 +232,14 @@ void setDailyBrew() {
 		uint8_t myTimeRefs[2] = {HOUR, MINUTE};
 
 		lcdWriteTop("Daily Brew Time?");
-		lcdWriteBottom(makeTimeString(startTime[DB_HOUR], 
-			startTime[DB_MIN]));
 
 		for (int i = 0; i < 2; i++) {
+			lcdWriteBottom(i ? makeTimeVersion(startTime[DB_HOUR]) + ":  " : 
+				"  :" + makeTimeVersion(startTime[DB_MIN]));
+			delay(500);
+			lcdWriteBottom(makeTimeString(startTime[DB_HOUR], 
+				startTime[DB_MIN]));
+
 			while (!digitalRead(CONTROL_BUTTON)) {
 				if (digitalRead(UP_BUTTON)) {
 					if ((startTime[i] + 1) == maxi[myTimeRefs[i]]) {
