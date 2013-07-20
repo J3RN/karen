@@ -85,7 +85,7 @@ uint32_t updateTime = 0;
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 // Month days have special maxi and the year has no maximum
-const int maxi[5] = {0, 12, 0, 24, 60};
+const uint8_t maxi[5] = {0, 12, 0, 24, 60};
 
 // Initialize time strings
 String brewString = "";
