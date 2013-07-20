@@ -96,6 +96,8 @@ String lastBrewString = "Never";
  * Get everything ready
  */
 void setup() {
+	Serial.begin(9600);
+
 	// Start LCD
 	lcd.begin(16, 2);
 
@@ -471,9 +473,11 @@ void brew() {
 	// Update the brew message and display it
 	brewString = "Brew Since " + lastBrewString;
 	display();
-	
+
 	if (autostop) {
-	    autoStopTime = millis() + (autoStopLength * 60 * 1000);
+	    autoStopTime = millis() + ((uint32_t)autoStopLength) * 60 * 1000;
+	    Serial.print("Auto Stop Time: ");
+	    Serial.println(autoStopTime);
 	}
 }
 
