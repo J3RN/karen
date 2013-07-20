@@ -499,22 +499,20 @@ String makeTimeString() {
 /*
  * Creates a string representing the time given
  */
-String makeTimeString(uint8_t myHour, uint8_t myMin) {
-	String hourString, minString;
+String makeTimeString(uint8_t myHour, uint8_t myMinute) {
+	return makeTimeVersion(myHour) + ":" + makeTimeString(myMinute);
+}
 
-	if (myHour < 10) {
-		hourString = "0" + String(myHour);
+/*
+ * Returns the time acceptable version of the number
+ * Ex. 7 -> "07", 14 -> "14"
+ */
+String makeTimeVersion(uint8_t timeUnit) {
+	if (timeUnit < 10) {
+		return "0" + String(timeUnit);
 	} else {
-		hourString = String(myHour);
+		return String(timeUnit);
 	}
-
-	if (myMin < 10) {
-		minString = "0" + String(myMin);
-	} else {
-		minString = String(myMin);
-	}
-
-	return hourString + ":" + minString;
 }
 
 /**
