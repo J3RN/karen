@@ -65,20 +65,20 @@ const String clearString = "                ";
 // Autostop
 // Not brewing
 // Time has not been initialized
-bool dailyBrew = false;
+bool dailyBrew = true;
 bool autostop = true;
 bool brewing = false;
 bool timeInit = false;
 
-// Set default for daily brew as midnight
-uint8_t startTime[2] = {0, 0};
+// Set default for daily brew as 08:00
+uint8_t startTime[2] = {8, 0};
 
 // Autostop vars
 uint8_t autoStopLength = 6;    // 6 minutes
 uint32_t autoStopTime;
 
 // Update vars
-const uint8_t updateInterval = 30;	// 30 seconds
+const uint8_t updateInterval = 60;	// 60 seconds
 uint32_t updateTime = 0;
 
 // Initialize the library with the numbers of the interface pins
