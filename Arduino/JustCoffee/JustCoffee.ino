@@ -57,6 +57,8 @@
 #define DB_HOUR 			0
 #define DB_MIN  			1
 
+#define UPDATE_INTERVAL 60000
+
 // String used to clear a line of the LCD
 const String clearString = "                ";
 
@@ -77,8 +79,7 @@ uint8_t startTime[2] = {8, 0};
 uint8_t autoStopLength = 6;    // 6 minutes
 uint32_t autoStopTime;
 
-// Update vars
-const uint8_t updateInterval = 60;	// 60 seconds
+// Container for next time to update
 uint32_t updateTime = 0;
 
 // Initialize the library with the numbers of the interface pins
@@ -154,7 +155,7 @@ void loop() {
 		if (dailyBrew) {
 			checkMakeCoffee();
 		}
-		updateTime = millis() + (updateInterval * 1000);
+		updateTime = millis() + UPDATE_INTERVAL;
 	}
 }
 
