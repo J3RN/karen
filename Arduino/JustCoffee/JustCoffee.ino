@@ -22,6 +22,9 @@
  *  LCD D6	3
  *  LCD D7	2
  *
+ * Photoresistor   A0
+ * LCD Brightness  A1
+ *
  * For LCD V0, 2,200 ohms works for me (r-r-r).
  */
 
@@ -33,12 +36,15 @@
 #define VERSION 			"Karen v1.6"
 
 // Set pins
-#define CONTROL_BUTTON		6
-#define DOWN_BUTTON 		7
+#define CONTROL_BUTTON		        6
+#define DOWN_BUTTON 		        7
 #define UP_BUTTON 			8
-#define COFFEE_BUTTON 		9	
+#define COFFEE_BUTTON 		        9	
 #define PIEZO 				10
 #define RELAY 				13
+
+#define PR                              A0  // PhotoResistor
+#define BO                              A1  // Brightness Out
 
 // Delays for button pushing
 #define DEBOUNCE 			250
@@ -157,6 +163,10 @@ void loop() {
 		}
 		updateTime = millis() + UPDATE_INTERVAL;
 	}
+
+        int newNegativeBrightness = map(analogRead(PR), 100, 500, 0, 255);
+        int newBrightness = 255 - newNegativeBrightness;
+        analogWrite(BO, newBrightness);
 }
 
 /*
