@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  pin: 1
+  'on': false
+
+two:
+  name: MyString
+  pin: 1
+  'on': false

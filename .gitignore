@@ -11,3 +11,6 @@
 Makefile
 .lib/
 .dep/
+
+# Vagrant dotdir
+.vagrant

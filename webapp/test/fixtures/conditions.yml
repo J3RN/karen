@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  sensor: 1
+  value: 1
+  comparison: 1
+
+two:
+  sensor: 1
+  value: 1
+  comparison: 1
