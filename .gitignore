@@ -14,3 +14,8 @@ Makefile
 
 # Vagrant dotdir
 .vagrant
+
+# Rails files that shouldn't be here
+tmp/
+log/
+database.yml
