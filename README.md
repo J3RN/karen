@@ -1,5 +1,5 @@
-CoffeeClock
-===========
+Karen Power Control
+===================
 
 Code for my automated coffee maker, Karen. There are several ways she can be configured, and they are detailed below.
 
