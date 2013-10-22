@@ -1,13 +1,12 @@
 Karen Power Control
 ===================
 
-Code for my automated coffee maker, Karen. There are several ways she can be configured, and they are detailed below.
+Code for my automated coffee maker, Karen.
 
 This repository contains code for:
 - Arduino time-based brewing
-- Arduino time-based brewing and blinds control
-- Arduino internet-controlled brewing
-- Raspberry Pi time-and-internet-controlled brewing
-- A webapp responsible for managing the internet-controlled brewing (formerly known as Ruby-Coffee-Maker)
-- An Android remote control app for internet-controlled brewing
 
+Work in progress includes:
+- Arduino internet-request-based power control
+- A webapp responsible for managing the internet-based power control
+- An Android app for making request about power control 
