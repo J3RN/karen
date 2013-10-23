@@ -28,7 +28,6 @@
 
 #include <Time.h>
 #include <LiquidCrystal.h>
-#include "pitches.h"
 
 // Define version number
 #define VERSION       "Karen v1.6"
