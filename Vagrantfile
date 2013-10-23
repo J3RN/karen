@@ -12,6 +12,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # doesn't already exist on the user's system.
   config.vm.box_url = "http://files.vagrantup.com/precise32.box" 
 
-  # Forward port 3000 for Rails testing
-  config.vm.network :forwarded_port, guest: 3000, host: 3000
+  # Forward port 4567 for Sinatra
+  config.vm.network :forwarded_port, guest: 4567, host: 3000
 end

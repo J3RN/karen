@@ -1,7 +1,25 @@
 class Device
 
   def initialize(pin)
-    @pin = pin, @on = false, @triggeredOn = false, @triggeredOff = false
+    @pin = pin
+    @on, @triggeredOn, @triggeredOff = false, false, false
+    @onConditions, @offConditions = Array.new, Array.new
+  end
+
+  def addOnCondition(condition)
+    @onConditions << condition
+  end
+
+  def addOffCondition(condition)
+    @offConditions << condition
+  end
+
+  def getOnConditions
+    @onConditions
+  end
+
+  def getOffConditions
+    @offConditions
   end
 
   def askStart
