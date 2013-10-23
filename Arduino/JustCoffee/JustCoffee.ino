@@ -38,7 +38,6 @@
 #define DOWN_BUTTON                 7
 #define UP_BUTTON                   8
 #define COFFEE_BUTTON               9  
-#define PIEZO                       10
 #define RELAY                       13
 
 #define PR                          A0  // PhotoResistor
@@ -109,7 +108,6 @@ void setup() {
   pinMode(UP_BUTTON, INPUT);
   pinMode(DOWN_BUTTON, INPUT);
   pinMode(COFFEE_BUTTON, INPUT);
-  pinMode(PIEZO, OUTPUT);
   pinMode(RELAY, OUTPUT);
   
   // Relay is set to LOW by default, so stop it
