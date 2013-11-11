@@ -1,0 +1,2 @@
+class KarenController < ApplicationController
+end
