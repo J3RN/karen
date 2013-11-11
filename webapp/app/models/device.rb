@@ -1,3 +1,3 @@
 class Device < ActiveRecord::Base
-  :belongs_to :karen
+  belongs_to :karen
 end
