@@ -4,6 +4,6 @@ KarenPowerControl::Application.routes.draw do
   root 'welcome#index'
 
   resources :karens, shallow: true do
-    resource :device
+    resources :device
   end
 end
