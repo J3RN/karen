@@ -1,7 +1,0 @@
-source 'https://rubygems.org'
-
-# Use Sinatra
-gem 'sinatra'
-
-# Use Thin for the server
-gem 'thin'
