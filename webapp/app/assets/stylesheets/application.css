@@ -12,6 +12,24 @@
  *= require_tree .
  */
 
+body {
+  color: #222;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  font-weight: bold;
+  color: inherit;
+}
+
 .centered {
   text-align: center;
+}
+
+.navbar {
+  padding: 1em;
+  background: #222;
+  color: #EEE;
 }
