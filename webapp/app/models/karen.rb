@@ -3,7 +3,8 @@ require 'bcrypt'
 class Karen < ActiveRecord::Base
   include BCrypt
 
-  has_many :users
+  has_many :relationships, :dependent => :destroy
+  has_many :users, :through => :relationships
   has_many :devices
 
   def password
