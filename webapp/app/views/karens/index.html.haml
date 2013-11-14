@@ -1,0 +1,6 @@
+%h1.centered Karens
+=link_to "New Karen", new_karen_path
+.list
+  - @karens.each do |karen|
+    = karen.name
+
