@@ -1,5 +1,7 @@
 .navbar
-  .right-aligned
+  .float-left.bold
+    Karen Power Control
+  .float-right
     - if user_signed_in?
       = link_to "Sign Out", destroy_user_session_path
     - else

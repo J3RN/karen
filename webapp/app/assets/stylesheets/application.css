@@ -28,8 +28,21 @@ a {
   text-align: center;
 }
 
+.bold {
+  font-weight: bold;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
 .navbar {
   padding: 1em;
+  height: 1em;
   background: #222;
   color: #EEE;
 }
