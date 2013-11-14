@@ -14,6 +14,7 @@ class KarensController < ApplicationController
 
   def create
     @karen = Karen.new(karen_params)
+    @karen.password = params[:password]
     
     if @karen.save
       redirect_to karen_path(@karen), notice: "Karen successfully added"
@@ -37,6 +38,6 @@ class KarensController < ApplicationController
     end
 
     def karen_params
-      params.require(:karen).permit(:name)
+      params.require(:karen).permit(:name, :password)
     end
 end

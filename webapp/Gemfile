@@ -6,6 +6,9 @@ gem 'rails', '4.0.1'
 # Use Devise for authentication
 gem 'devise'
 
+# BCrypt for pin privacy. Just in case.
+gem 'bcrypt-ruby'
+
 # Use HAML for views
 gem 'haml'
 
