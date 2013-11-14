@@ -1,6 +1,6 @@
 .navbar
   .float-left.bold
-    Karen Power Control
+    =link_to "Karen Power Control", user_signed_in? ? root_path : karens_path
   .float-right
     - if user_signed_in?
       = link_to "Sign Out", destroy_user_session_path
