@@ -1,5 +1,6 @@
 class KarensController < ApplicationController
   before_action :load_karen, only: [:show, :edit, :update, :destroy]
+  before_action :check_access, except: [:index]
 
   def index
     @karens = Karen.all
@@ -39,6 +40,17 @@ class KarensController < ApplicationController
   private
     def load_karen
       @karen = Karen.find(params[:id])
+    end
+  
+    def check_access
+      has_access = false
+      @karen.relationships.each do |rel|
+        has_access = true if rel.user_id == current_user.id
+      end
+
+      if not has_access
+        redirect_to karens_path, notice: "You do not have access to this Karen"
+      end
     end
 
     def karen_params

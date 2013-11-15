@@ -40,6 +40,22 @@ a {
   float: right;
 }
 
+.no-margin {
+  margin: 0;
+}
+
+.no-padding {
+  padding: 0;
+}
+
+.notice {
+  background: #DDD;
+}
+
+.alert {
+  background: #FF2222;
+}
+
 .navbar {
   padding: 1em;
   height: 1em;
