@@ -2,5 +2,6 @@
 =link_to "New Karen", new_karen_path
 .list
   - @karens.each do |karen|
-    = karen.name
+    =link_to karen.name, karen_path(karen)
+    %br
 
