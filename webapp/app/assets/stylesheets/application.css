@@ -62,3 +62,13 @@ a {
   background: #222;
   color: #EEE;
 }
+
+.main {
+  min-height: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.content {
+  padding: 0 1em;
+}
