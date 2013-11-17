@@ -1,6 +1,6 @@
 class KarensController < ApplicationController
   before_action :load_karen, only: [:show, :edit, :update, :destroy]
-  before_action :check_access, except: [:index]
+  before_action :check_access, except: [:index, :new, :create]
 
   def index
     @karens = Karen.all
