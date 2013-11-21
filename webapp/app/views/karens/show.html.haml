@@ -1,1 +1,7 @@
 %h1.centered= @karen.name
+.centered= link_to "New Device", new_karen_device_path(@karen)
+- @karen.devices.each do |dev|
+  %p
+    = dev.name
+    , 
+    = dev.status
