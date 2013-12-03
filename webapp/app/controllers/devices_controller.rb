@@ -3,11 +3,6 @@ class DevicesController < ApplicationController
   before_action :load_karen
   before_action :check_access, except: [:new, :create]
 
-  OFF = 0
-  REQUESTED_ON = 1
-  ON = 2
-  REQUESTED_OFF = 3
-
   def new
     @device = Device.new
   end
@@ -15,12 +10,13 @@ class DevicesController < ApplicationController
   def create
     @device = Device.new(device_params)
     @device.karen_id = @karen.id
-    @device.status = OFF
+    @device.status = Device::OFF
     
     if @device.save
       redirect_to karen_path(@karen), notice: "Device successfully added"
     else
-      redirect_to new_karen_device_path(@device), notice: "Device could not be saved"
+      redirect_to new_karen_device_path(@device), 
+        notice: "Device could not be saved"
     end
   end
 
@@ -28,9 +24,17 @@ class DevicesController < ApplicationController
   end
 
   def update
+    if @device.update(device_params)
+      redirect_to karen_path(@karen), notice: "Device successfully updated"
+    else
+      redirect_to edit_device_path(@device), 
+        notice: "Device could not be updated"
+    end
   end
 
   def destroy
+    @device.destroy
+    redirect_to karen_path(@karen), notice: "Device deleted"
   end
 
   private
