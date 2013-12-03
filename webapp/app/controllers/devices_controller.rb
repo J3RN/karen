@@ -3,6 +3,11 @@ class DevicesController < ApplicationController
   before_action :load_karen
   before_action :check_access, except: [:new, :create]
 
+  OFF = 0
+  REQUESTED_ON = 1
+  ON = 2
+  REQUESTED_OFF = 3
+
   def new
     @device = Device.new
   end
@@ -10,6 +15,7 @@ class DevicesController < ApplicationController
   def create
     @device = Device.new(device_params)
     @device.karen_id = @karen.id
+    @device.status = OFF
     
     if @device.save
       redirect_to karen_path(@karen), notice: "Device successfully added"
