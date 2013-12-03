@@ -1,6 +1,6 @@
 class DevicesController < ApplicationController
   before_action :load_device, only: [:edit, :update, :destroy]
-  before_action :load_karen
+  before_action :load_karen, only: [:new, :create]
   before_action :check_access, except: [:new, :create]
 
   def new
@@ -44,6 +44,14 @@ class DevicesController < ApplicationController
   
     def load_karen
       @karen = Karen.find(params[:karen_id])
+    end
+
+    def check_access
+      @karen = Karen.find(@device.karen_id)
+      if !@karen.users.include?(current_user) || !user_signed_in?
+        redirect_to karens_path, 
+          notice: "You do not have access to this device"
+      end
     end
 
     def device_params

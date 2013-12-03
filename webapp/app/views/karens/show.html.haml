@@ -2,6 +2,7 @@
 .centered= link_to "New Device", new_karen_device_path(@karen)
 - @karen.devices.each do |dev|
   %p
+    = link_to "Edit", edit_device_path(dev)
     = dev.name
     , 
     = dev.status
