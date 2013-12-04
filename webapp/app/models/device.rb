@@ -6,4 +6,17 @@ class Device < ActiveRecord::Base
   REQUESTED_ON = 1
   ON = 2
   REQUESTED_OFF = 3
+
+  def status_string
+    case self.status
+    when OFF
+      "Off"
+    when REQUESTED_ON
+      "Requested to turn on"
+    when ON
+      "On"
+    when REQUESTED_OFF
+      "Requested to turn off"
+    end
+  end
 end

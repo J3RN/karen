@@ -3,6 +3,4 @@
 - @karen.devices.each do |dev|
   %p
     = link_to "Edit", edit_device_path(dev)
-    = dev.name
-    , 
-    = dev.status
+    = dev.name + ", " + dev.status.to_s

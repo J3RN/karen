@@ -1,10 +1,11 @@
 class DevicesController < ApplicationController
   before_action :load_device, only: [:edit, :update, :destroy]
-  before_action :load_karen, only: [:new, :create]
+  before_action :load_karen
   before_action :check_access, except: [:new, :create]
 
   def new
     @device = Device.new
+    @path = [@karen, @device]
   end
 
   def create
@@ -21,6 +22,7 @@ class DevicesController < ApplicationController
   end
 
   def edit
+    @path = @device
   end
 
   def update
@@ -43,7 +45,11 @@ class DevicesController < ApplicationController
     end
   
     def load_karen
-      @karen = Karen.find(params[:karen_id])
+      if params[:karen_id].nil?
+        @karen = Karen.find(@device.karen_id)
+      else
+        @karen = Karen.find(params[:karen_id])
+      end
     end
 
     def check_access
